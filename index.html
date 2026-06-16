@@ -619,27 +619,24 @@ boot();
    MIDNIGHT AUTO DATE RESET
 ═══════════════════════════════════════ */
 function startMidnightReset(){
-  function msUntilMidnight(){
-    const now=new Date();
-    const midnight=new Date(now);
-    midnight.setHours(24,0,0,0); // next midnight
-    return midnight-now;
+  // Always make sure currentDate is today on load
+  const nowDate=today();
+  if(currentDate!==nowDate){
+    currentDate=nowDate;
+    const di=document.getElementById('date-inp');
+    if(di)di.value=currentDate;
   }
-  function scheduleMidnight(){
-    setTimeout(()=>{
-      // Reset date to new today
-      currentDate=today();
-      // Update date picker if visible
+  // Poll every 60 seconds — reliable even in background tabs
+  setInterval(()=>{
+    const newDay=today();
+    if(newDay!==currentDate){
+      currentDate=newDay;
       const di=document.getElementById('date-inp');
       if(di)di.value=currentDate;
-      // Re-render current page
       if(currentPage)renderPage();
-      showToast('📅 Date updated to '+new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}));
-      // Schedule next midnight
-      scheduleMidnight();
-    }, msUntilMidnight());
-  }
-  scheduleMidnight();
+      showToast('📅 New day! Date updated to '+new Date().toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'}),4000);
+    }
+  },60000); // check every 60 seconds
 }
 
 /* ═══════════════════════════════════════
