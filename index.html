@@ -402,6 +402,10 @@ canvas{display:block;}
         <input type="text" id="su-user" placeholder="Choose a username"/>
       </div>
       <div class="field-wrap">
+        <label>Phone Number <span style="color:#ff6b6b;font-size:11px">(Required)</span></label>
+        <input type="tel" id="su-phone" placeholder="e.g. +60123456789" autocomplete="tel"/>
+      </div>
+      <div class="field-wrap">
         <label>Password</label>
         <input type="password" id="su-pass" placeholder="Create password"/>
         <button class="eye-btn" onclick="toggleEye('su-pass',this)" type="button">👁</button>
@@ -607,8 +611,36 @@ async function boot(){
   setTimeout(()=>ls.classList.add('hidden'),500);
   if(currentUser)showApp();
   else document.getElementById('login-screen').classList.remove('hidden');
+  startMidnightReset();
 }
 boot();
+
+/* ═══════════════════════════════════════
+   MIDNIGHT AUTO DATE RESET
+═══════════════════════════════════════ */
+function startMidnightReset(){
+  function msUntilMidnight(){
+    const now=new Date();
+    const midnight=new Date(now);
+    midnight.setHours(24,0,0,0); // next midnight
+    return midnight-now;
+  }
+  function scheduleMidnight(){
+    setTimeout(()=>{
+      // Reset date to new today
+      currentDate=today();
+      // Update date picker if visible
+      const di=document.getElementById('date-inp');
+      if(di)di.value=currentDate;
+      // Re-render current page
+      if(currentPage)renderPage();
+      showToast('📅 Date updated to '+new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}));
+      // Schedule next midnight
+      scheduleMidnight();
+    }, msUntilMidnight());
+  }
+  scheduleMidnight();
+}
 
 /* ═══════════════════════════════════════
    ENTER KEY HANDLER (Global)
@@ -678,19 +710,22 @@ async function doSignIn(){
 
 async function doSignUp(){
   const u=document.getElementById('su-user').value.trim();
+  const ph=document.getElementById('su-phone').value.trim();
   const p=document.getElementById('su-pass').value;
   const p2=document.getElementById('su-pass2').value;
   const err=document.getElementById('su-err');
   err.textContent='';
-  if(!u||!p||!p2){err.textContent='Please fill in all fields.';return;}
+  if(!u||!ph||!p||!p2){err.textContent='All fields are required including phone number.';return;}
+  if(!/^[+\d][\d\s\-().]{6,19}$/.test(ph)){err.textContent='Please enter a valid phone number.';return;}
   if(p!==p2){err.textContent='Passwords do not match.';return;}
+  if(p.length<6){err.textContent='Password must be at least 6 characters.';return;}
   if(u===ADMIN.username){err.textContent='That username is reserved.';return;}
   try{
     const doc=await accountsCol.doc(u).get();
     if(doc.exists){err.textContent='Username already taken.';return;}
-    await accountsCol.doc(u).set({password:p,role:'member',provider:'password',createdAt:Date.now()});
-    loginUser({username:u,role:'member'});
-    logToSheets(u,'','Sign Up','member');
+    await accountsCol.doc(u).set({password:p,phone:ph,role:'member',provider:'password',createdAt:Date.now()});
+    loginUser({username:u,role:'member',phone:ph});
+    logToSheets(u,ph,'Sign Up','member');
   }catch{err.textContent='Error creating account. Try again.';}
 }
 
