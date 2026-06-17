@@ -594,9 +594,9 @@ async function saveSheetsUrl(url){
   SHEETS_URL=url;
   await metaCol.doc('settings').set({sheetsUrl:url},{merge:true});
 }
-function logToSheets(username,email,action,role){
+function logToSheets(username,phone,action,role){
   if(!SHEETS_URL)return;
-  const url=`${SHEETS_URL}?username=${encodeURIComponent(username)}&email=${encodeURIComponent(email||'')}&action=${encodeURIComponent(action)}&role=${encodeURIComponent(role)}`;
+  const url=`${SHEETS_URL}?username=${encodeURIComponent(username)}&phone=${encodeURIComponent(phone||'')}&action=${encodeURIComponent(action)}&role=${encodeURIComponent(role)}`;
   fetch(url,{mode:'no-cors'}).catch(()=>{});
 }
 
@@ -748,7 +748,7 @@ async function doSignIn(){
     const doc=await accountsCol.doc(u).get();
     if(doc.exists&&doc.data().password===p){
       loginUser({username:u,role:'member'});
-      logToSheets(u,doc.data().email||'','Sign In','member');
+      logToSheets(u,doc.data().phone||'','Sign In','member');
       return;
     }
   }catch{}
