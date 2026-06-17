@@ -244,6 +244,11 @@ canvas{display:block;}
 /* ─── TOAST ─── */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1d1d1f;color:#fff;padding:11px 22px;border-radius:100px;font-size:13px;font-weight:600;z-index:9999;transition:transform .3s ease;box-shadow:0 8px 30px rgba(0,0,0,.28);white-space:nowrap;}
 .toast.show{transform:translateX(-50%) translateY(0);}
+/* ─── TOPBAR RIGHT (always visible, incl. mobile) ─── */
+.topbar-right{display:flex;align-items:center;gap:8px;margin-left:auto;}
+.topbar-avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0;}
+.topbar-logout{width:34px;height:34px;border-radius:10px;border:none;background:rgba(220,38,38,.1);color:#dc2626;font-size:17px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .2s;}
+.topbar-logout:hover{background:rgba(220,38,38,.22);}
 
 /* ─── SETTINGS ─── */
 .settings-code{background:#1d1d1f;color:#34C759;border-radius:12px;padding:16px;font-family:monospace;font-size:11.5px;line-height:1.7;overflow-x:auto;margin:10px 0;}
@@ -403,6 +408,8 @@ canvas{display:block;}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>emailjs.init('YOUR_EMAILJS_PUBLIC_KEY');</script>
 </head>
 <body>
 <div id="cursor-dot"></div>
@@ -458,6 +465,10 @@ canvas{display:block;}
         <input type="text" id="su-user" placeholder="Choose a username"/>
       </div>
       <div class="field-wrap">
+        <label>Email <span style="color:#ff6b6b;font-size:11px">(Required for OTP)</span></label>
+        <input type="email" id="su-email" placeholder="your@email.com" autocomplete="email"/>
+      </div>
+      <div class="field-wrap">
         <label>Phone Number <span style="color:#ff6b6b;font-size:11px">(Required)</span></label>
         <input type="tel" id="su-phone" placeholder="e.g. +60123456789" autocomplete="tel"/>
       </div>
@@ -488,6 +499,7 @@ canvas{display:block;}
     <div style="font-size:36px;margin-bottom:10px">👋</div>
     <div class="gp-title">One quick step!</div>
     <div class="gp-sub">Please complete your profile to join GrowthCircle. This only happens once.</div>
+    <div class="form-group"><label>Email</label><input type="email" id="gp-email" readonly style="background:#F5F5F7;color:#6e6e73;cursor:not-allowed"/></div>
     <div class="form-group"><label>Username <span style="color:#ff6b6b;font-size:11px">(Required)</span></label><input type="text" id="gp-username" placeholder="Choose a username"/></div>
     <div class="form-group"><label>Phone Number <span style="color:#ff6b6b;font-size:11px">(Required)</span></label><input type="tel" id="gp-phone" placeholder="e.g. +60123456789"/></div>
     <div id="gp-err" style="color:var(--red);font-size:12.5px;margin-bottom:12px;min-height:18px"></div>
@@ -499,9 +511,9 @@ canvas{display:block;}
 <!-- OTP VERIFICATION OVERLAY -->
 <div id="otp-overlay" class="otp-overlay" style="display:none">
   <div class="otp-card">
-    <div class="otp-icon">📱</div>
-    <div class="otp-title">Verify Your Number</div>
-    <div class="otp-desc">We sent a 6-digit code to</div>
+    <div class="otp-icon">✉️</div>
+    <div class="otp-title">Check Your Email</div>
+    <div class="otp-desc">We sent a 6-digit verification code to</div>
     <div class="otp-phone-display" id="otp-phone-label"></div>
     <div class="otp-inputs">
       <input type="number" maxlength="1" id="otp0" oninput="otpInput(this,0)" onkeydown="otpKey(event,0)" onpaste="otpPaste(event)"/>
@@ -514,7 +526,7 @@ canvas{display:block;}
     <div class="otp-err" id="otp-err"></div>
     <button class="otp-verify-btn" id="otp-verify-btn" onclick="verifyOTP()" disabled>Verify &amp; Create Account</button>
     <div class="otp-resend">
-      Didn't receive it? <button id="otp-resend-btn" onclick="resendOTP()" disabled>Resend OTP (<span id="otp-countdown">60</span>s)</button>
+      Didn't receive it? <button id="otp-resend-btn" onclick="resendOTP()" disabled>Resend (<span id="otp-countdown">60</span>s)</button>
     </div>
     <br/><button class="otp-cancel" onclick="cancelOTP()">Cancel &amp; go back</button>
   </div>
@@ -563,6 +575,10 @@ canvas{display:block;}
       <button class="menu-btn" id="menu-btn" onclick="openSidebar()">☰</button>
       <div class="topbar-title" id="topbar-title">Dashboard</div>
       <div class="live-chip"><div class="live-dot"></div><span class="live-text">Live</span></div>
+      <div class="topbar-right">
+        <div class="topbar-avatar" id="topbar-avatar"></div>
+        <button class="topbar-logout" onclick="doLogout()" title="Logout">⏻</button>
+      </div>
     </div>
     <div class="main-area" id="main-area"></div>
   </div>
@@ -827,40 +843,55 @@ async function doSignIn(){
 
 async function doSignUp(){
   const u=document.getElementById('su-user').value.trim();
+  const em=document.getElementById('su-email').value.trim();
   const ph=document.getElementById('su-phone').value.trim();
   const p=document.getElementById('su-pass').value;
   const p2=document.getElementById('su-pass2').value;
   const err=document.getElementById('su-err');
   err.textContent='';
-  if(!u||!ph||!p||!p2){err.textContent='All fields are required including phone number.';return;}
-  if(!/^[+\d][\d\s\-().]{6,19}$/.test(ph)){err.textContent='Please enter a valid phone number (include country code e.g. +60...).';return;}
+  if(!u||!em||!ph||!p||!p2){err.textContent='All fields are required.';return;}
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){err.textContent='Please enter a valid email address.';return;}
+  if(!/^[+\d][\d\s\-().]{6,19}$/.test(ph)){err.textContent='Please enter a valid phone number (e.g. +60123456789).';return;}
   if(p!==p2){err.textContent='Passwords do not match.';return;}
   if(p.length<6){err.textContent='Password must be at least 6 characters.';return;}
   if(u===ADMIN.username){err.textContent='That username is reserved.';return;}
   try{
     const doc=await accountsCol.doc(u).get();
     if(doc.exists){err.textContent='Username already taken.';return;}
-    await accountsCol.doc(u).set({password:p,phone:ph,role:'member',provider:'password',createdAt:Date.now()});
-    loginUser({username:u,role:'member',phone:ph});
-    logToSheets(u,ph,'Sign Up','member');
-    showToast('Welcome to GrowthCircle!',3000);
-  }catch(e){err.textContent='Error creating account. Try again.';}
+  }catch{err.textContent='Error checking username. Try again.';return;}
+  // All valid — send OTP to email
+  window._pendingSignup={username:u,email:em,phone:ph,password:p};
+  await sendEmailOTP(em,err);
 }
 
 async function doGoogleSignIn(){
   try{
     const result=await auth.signInWithPopup(googleProvider);
     const user=result.user;
-    const isNew=result.additionalUserInfo?.isNewUser;
-    const uData={username:user.displayName||user.email,email:user.email,role:'member',provider:'google',createdAt:Date.now()};
-    await accountsCol.doc(user.uid).set(uData,{merge:true});
-    loginUser({username:user.displayName||user.email,email:user.email,role:'member',uid:user.uid});
-    logToSheets(user.displayName||'',user.email,isNew?'Sign Up':'Sign In','member');
+    // Check if they already completed their profile
+    const doc=await accountsCol.doc(user.uid).get();
+    if(doc.exists && doc.data().username){
+      // Returning Google user — log in directly
+      const d=doc.data();
+      loginUser({username:d.username,email:user.email,role:'member',uid:user.uid,phone:d.phone||''});
+      logToSheets(d.username,d.phone||'','Sign In','member');
+    } else {
+      // New Google user — show profile completion form
+      _pendingGoogleUser={user};
+      // Pre-fill email (read-only)
+      const gpEmail=document.getElementById('gp-email');
+      if(gpEmail) gpEmail.value=user.email||'';
+      document.getElementById('gp-username').value='';
+      document.getElementById('gp-phone').value='';
+      document.getElementById('gp-err').textContent='';
+      document.getElementById('gp-overlay').style.display='flex';
+      setTimeout(()=>document.getElementById('gp-username').focus(),100);
+    }
   }catch(e){
     const err=document.getElementById('si-err')||document.getElementById('su-err');
     if(err){
       if(e.code==='auth/popup-closed-by-user')err.textContent='';
-      else if(e.code==='auth/operation-not-allowed')err.textContent='Google sign-in not enabled yet. Enable it in Firebase Console → Authentication.';
+      else if(e.code==='auth/operation-not-allowed')err.textContent='Google sign-in not enabled yet.';
       else err.textContent='Google sign-in failed. Try again.';
     }
   }
@@ -886,10 +917,14 @@ function doLogout(){
 function showApp(){
   document.getElementById('app-screen').classList.remove('hidden');
   const n=currentUser.username;
+  // Sidebar avatar
   const av=document.getElementById('sidebar-avatar');
   av.textContent=initials(n);av.style.background=avatarColor(n);av.style.width='32px';av.style.height='32px';av.style.fontSize='12px';
   document.getElementById('sidebar-name').textContent=n;
   document.getElementById('sidebar-role').textContent=currentUser.role==='admin'?'Administrator':'Member';
+  // Topbar avatar (always visible, incl. mobile)
+  const tav=document.getElementById('topbar-avatar');
+  if(tav){tav.textContent=initials(n);tav.style.background=avatarColor(n);}
   const adminSection=document.getElementById('admin-nav-section');
   if(currentUser.role==='admin')adminSection.classList.remove('hidden');
   else adminSection.classList.add('hidden');
@@ -1746,96 +1781,74 @@ function startOTPCountdown(seconds=60){
   },1000);
 }
 
-/* ── Send OTP via Firebase Phone Auth ── */
-async function sendOTP(phone, errEl){
+/* ── EmailJS OTP — config (replace with your values) ── */
+const EMAILJS_SERVICE_ID  = 'YOUR_SERVICE_ID';   // e.g. 'service_abc123'
+const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';  // e.g. 'template_xyz456'
+// Public key is already set via emailjs.init() in <head>
+
+/* ── Generate secure 6-digit OTP ── */
+function generateOTP(){
+  const arr = new Uint32Array(1);
+  crypto.getRandomValues(arr);
+  return String(arr[0] % 900000 + 100000); // always 6 digits
+}
+
+/* ── Send OTP via EmailJS ── */
+async function sendEmailOTP(email, errEl){
   const err = errEl || document.getElementById('otp-err');
+  const otp = generateOTP();
+  const expiry = Date.now() + 10 * 60 * 1000; // 10 minutes
+  window._otpData = { code: otp, expiry, email };
+
   try{
-    // Fully destroy old reCAPTCHA verifier
-    if(window._recaptchaVerifier){
-      try{ window._recaptchaVerifier.clear(); }catch{}
-      window._recaptchaVerifier = null;
-    }
-    // Destroy and recreate the container element so reCAPTCHA has a fresh mount
-    const oldContainer = document.getElementById('recaptcha-container');
-    if(oldContainer){
-      const parent = oldContainer.parentNode;
-      parent.removeChild(oldContainer);
-      const newContainer = document.createElement('div');
-      newContainer.id = 'recaptcha-container';
-      parent.appendChild(newContainer);
-    }
-    // Create brand-new invisible reCAPTCHA (compat SDK: auth is NOT first arg)
-    window._recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
-      'recaptcha-container',
-      { size:'invisible', callback:()=>{} },
-      auth   // pass auth instance as 3rd arg for compat SDK v9
-    );
-    // Pre-render to catch domain/config errors early
-    await window._recaptchaVerifier.render();
-    const result = await auth.signInWithPhoneNumber(phone, window._recaptchaVerifier);
-    _otpConfirmation = result;
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      to_email:  email,
+      otp_code:  otp,
+      app_name:  'GrowthCircle',
+      valid_mins: '10'
+    });
     // Show OTP overlay
-    document.getElementById('otp-phone-label').textContent = phone;
+    document.getElementById('otp-phone-label').textContent = email;
     document.getElementById('otp-overlay').style.display = 'flex';
     document.getElementById('otp-err').textContent = '';
     clearOTPInputs();
     startOTPCountdown(60);
     setTimeout(()=>document.getElementById('otp0').focus(), 200);
   }catch(e){
-    // Reset grecaptcha widget so user can try again
-    try{
-      if(window._recaptchaVerifier){
-        const wId = await window._recaptchaVerifier.render();
-        if(window.grecaptcha) window.grecaptcha.reset(wId);
-      }
-    }catch{}
-    if(window._recaptchaVerifier){ try{window._recaptchaVerifier.clear();}catch{} window._recaptchaVerifier=null; }
-    console.error('OTP error code:', e.code, e.message);
-    let msg = '';
-    if(e.code==='auth/invalid-phone-number') msg='Invalid phone number. Use country code e.g. +60123456789';
-    else if(e.code==='auth/too-many-requests') msg='Too many attempts. Wait a few minutes or use a test number.';
-    else if(e.code==='auth/operation-not-allowed') msg='Phone auth not enabled in Firebase Console. Also check SMS region policy allows your country.';
-    else if(e.code==='auth/captcha-check-failed') msg='reCAPTCHA failed. Make sure your domain is in Firebase Authorized Domains.';
-    else if(e.code==='auth/missing-app-credential') msg='App not authorized. Add your domain to Firebase → Authentication → Authorized Domains.';
-    else msg='Error ['+e.code+']: '+(e.message||'');
-    if(err) err.textContent=msg;
-    showToast('⚠️ '+msg, 5000);
+    console.error('EmailJS error:', e);
+    const msg = 'Failed to send OTP email. Check your EmailJS config or try again.';
+    if(err) err.textContent = msg;
+    showToast('⚠️ '+msg, 4000);
   }
 }
 
-/* ── Verify OTP and complete signup ── */
+/* ── Verify OTP locally ── */
 async function verifyOTP(){
   const code = getOTPValue();
-  const err = document.getElementById('otp-err');
+  const err  = document.getElementById('otp-err');
   err.textContent = '';
   if(code.length < 6){ err.textContent='Please enter all 6 digits.'; return; }
   const btn = document.getElementById('otp-verify-btn');
-  btn.disabled = true;
-  btn.textContent = 'Verifying…';
+  btn.disabled = true; btn.textContent = 'Verifying…';
+
+  const d = window._otpData;
+  if(!d){ err.textContent='Session expired. Please go back and try again.'; btn.disabled=false; btn.textContent='Verify & Create Account'; return; }
+  if(Date.now() > d.expiry){ err.textContent='Code expired. Click Resend to get a new one.'; btn.disabled=false; btn.textContent='Verify & Create Account'; clearOTPInputs(); return; }
+  if(code !== d.code){ err.textContent='Incorrect code. Please check your email and try again.'; btn.disabled=false; btn.textContent='Verify & Create Account'; clearOTPInputs(); document.getElementById('otp0').focus(); return; }
+
+  // ✅ OTP correct — create account
   try{
-    await _otpConfirmation.confirm(code);
-    // OTP verified ✅ — sign out of Firebase Phone Auth session (we use custom auth)
-    await auth.signOut();
-    // Create account in Firestore
-    const {username,phone,password} = window._pendingSignup;
-    await accountsCol.doc(username).set({password,phone,role:'member',provider:'password',phoneVerified:true,createdAt:Date.now()});
-    loginUser({username,role:'member',phone});
+    const {username,email,phone,password} = window._pendingSignup;
+    await accountsCol.doc(username).set({password,phone,email,role:'member',provider:'password',emailVerified:true,createdAt:Date.now()});
+    loginUser({username,role:'member',phone,email});
     logToSheets(username,phone,'Sign Up','member');
-    // Clean up
     document.getElementById('otp-overlay').style.display='none';
     clearInterval(_otpCountdownTimer);
-    window._pendingSignup = null;
-    _otpConfirmation = null;
-    showToast('✅ Phone verified! Welcome to GrowthCircle.',3500);
+    window._pendingSignup = null; window._otpData = null;
+    showToast('✅ Email verified! Welcome to GrowthCircle.',3500);
   }catch(e){
-    btn.disabled = false;
-    btn.textContent = 'Verify & Create Account';
-    if(e.code==='auth/invalid-verification-code'||e.code==='auth/code-expired'){
-      err.textContent='Incorrect or expired code. Please try again.';
-      clearOTPInputs(); document.getElementById('otp0').focus();
-    } else {
-      err.textContent = e.message||'Verification failed.';
-    }
+    btn.disabled=false; btn.textContent='Verify & Create Account';
+    err.textContent='Error creating account. Try again.';
   }
 }
 
@@ -1843,10 +1856,10 @@ async function verifyOTP(){
 async function resendOTP(){
   if(!window._pendingSignup) return;
   const err = document.getElementById('otp-err');
-  err.textContent = 'Sending new code…';
+  err.textContent='Sending new code…';
   clearOTPInputs();
   document.getElementById('otp-resend-btn').disabled=true;
-  await sendOTP(window._pendingSignup.phone, err);
+  await sendEmailOTP(window._pendingSignup.email, err);
   err.textContent='';
   startOTPCountdown(60);
 }
@@ -1855,9 +1868,7 @@ async function resendOTP(){
 function cancelOTP(){
   document.getElementById('otp-overlay').style.display='none';
   clearInterval(_otpCountdownTimer);
-  _otpConfirmation = null;
-  window._pendingSignup = null;
-  if(window._recaptchaVerifier){ try{window._recaptchaVerifier.clear();}catch{} window._recaptchaVerifier=null; }
+  window._pendingSignup = null; window._otpData = null;
 }
 
 </script>
