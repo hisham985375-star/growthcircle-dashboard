@@ -465,10 +465,6 @@ canvas{display:block;}
         <input type="text" id="su-user" placeholder="Choose a username"/>
       </div>
       <div class="field-wrap">
-        <label>Email <span style="color:#ff6b6b;font-size:11px">(Required for OTP)</span></label>
-        <input type="email" id="su-email" placeholder="your@email.com" autocomplete="email"/>
-      </div>
-      <div class="field-wrap">
         <label>Phone Number <span style="color:#ff6b6b;font-size:11px">(Required)</span></label>
         <input type="tel" id="su-phone" placeholder="e.g. +60123456789" autocomplete="tel"/>
       </div>
@@ -722,6 +718,13 @@ async function boot(){
   await checkDataVersion();
   await loadSheetsUrl();
   setupListeners();
+  // Handle Google redirect result (mobile sign-in)
+  try{
+    const redir=await auth.getRedirectResult();
+    if(redir&&redir.user){
+      await handleGoogleUser(redir.user);
+    }
+  }catch(e){ console.warn('Redirect result error:',e.code); }
   await new Promise(r=>setTimeout(r,1000));
   dbReady=true;
   const ls=document.getElementById('loading-screen');
@@ -843,14 +846,12 @@ async function doSignIn(){
 
 async function doSignUp(){
   const u=document.getElementById('su-user').value.trim();
-  const em=document.getElementById('su-email').value.trim();
   const ph=document.getElementById('su-phone').value.trim();
   const p=document.getElementById('su-pass').value;
   const p2=document.getElementById('su-pass2').value;
   const err=document.getElementById('su-err');
   err.textContent='';
-  if(!u||!em||!ph||!p||!p2){err.textContent='All fields are required.';return;}
-  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){err.textContent='Please enter a valid email address.';return;}
+  if(!u||!ph||!p||!p2){err.textContent='All fields are required.';return;}
   if(!/^[+\d][\d\s\-().]{6,19}$/.test(ph)){err.textContent='Please enter a valid phone number (e.g. +60123456789).';return;}
   if(p!==p2){err.textContent='Passwords do not match.';return;}
   if(p.length<6){err.textContent='Password must be at least 6 characters.';return;}
@@ -858,40 +859,55 @@ async function doSignUp(){
   try{
     const doc=await accountsCol.doc(u).get();
     if(doc.exists){err.textContent='Username already taken.';return;}
-  }catch{err.textContent='Error checking username. Try again.';return;}
-  // All valid — send OTP to email
-  window._pendingSignup={username:u,email:em,phone:ph,password:p};
-  await sendEmailOTP(em,err);
+    await accountsCol.doc(u).set({password:p,phone:ph,role:'member',provider:'password',createdAt:Date.now()});
+    loginUser({username:u,role:'member',phone:ph});
+    logToSheets(u,ph,'Sign Up','member');
+    showToast('Welcome to GrowthCircle! 🎉',3000);
+  }catch(e){err.textContent='Error creating account. Please try again.';}
+}
+
+function isMobile(){
+  return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
+}
+
+async function handleGoogleUser(user){
+  const doc=await accountsCol.doc(user.uid).get();
+  if(doc.exists && doc.data().username){
+    const d=doc.data();
+    loginUser({username:d.username,email:user.email,role:'member',uid:user.uid,phone:d.phone||''});
+    logToSheets(d.username,d.phone||'','Sign In','member');
+  } else {
+    _pendingGoogleUser={user};
+    const gpEmail=document.getElementById('gp-email');
+    if(gpEmail) gpEmail.value=user.email||'';
+    document.getElementById('gp-username').value='';
+    document.getElementById('gp-phone').value='';
+    document.getElementById('gp-err').textContent='';
+    document.getElementById('gp-overlay').style.display='flex';
+    setTimeout(()=>document.getElementById('gp-username').focus(),100);
+  }
 }
 
 async function doGoogleSignIn(){
+  if(isMobile()){
+    // Mobile: use redirect (popups are blocked on mobile browsers)
+    try{ await auth.signInWithRedirect(googleProvider); }
+    catch(e){ showToast('Google sign-in failed. Try again.',3000); }
+    return;
+  }
+  // Desktop: use popup
   try{
     const result=await auth.signInWithPopup(googleProvider);
-    const user=result.user;
-    // Check if they already completed their profile
-    const doc=await accountsCol.doc(user.uid).get();
-    if(doc.exists && doc.data().username){
-      // Returning Google user — log in directly
-      const d=doc.data();
-      loginUser({username:d.username,email:user.email,role:'member',uid:user.uid,phone:d.phone||''});
-      logToSheets(d.username,d.phone||'','Sign In','member');
-    } else {
-      // New Google user — show profile completion form
-      _pendingGoogleUser={user};
-      // Pre-fill email (read-only)
-      const gpEmail=document.getElementById('gp-email');
-      if(gpEmail) gpEmail.value=user.email||'';
-      document.getElementById('gp-username').value='';
-      document.getElementById('gp-phone').value='';
-      document.getElementById('gp-err').textContent='';
-      document.getElementById('gp-overlay').style.display='flex';
-      setTimeout(()=>document.getElementById('gp-username').focus(),100);
-    }
+    await handleGoogleUser(result.user);
   }catch(e){
+    if(e.code==='auth/popup-blocked'||e.code==='auth/popup-closed-by-user'){
+      // Fallback to redirect if popup blocked
+      try{ await auth.signInWithRedirect(googleProvider); }catch{}
+      return;
+    }
     const err=document.getElementById('si-err')||document.getElementById('su-err');
     if(err){
-      if(e.code==='auth/popup-closed-by-user')err.textContent='';
-      else if(e.code==='auth/operation-not-allowed')err.textContent='Google sign-in not enabled yet.';
+      if(e.code==='auth/operation-not-allowed') err.textContent='Google sign-in not enabled in Firebase Console.';
       else err.textContent='Google sign-in failed. Try again.';
     }
   }
