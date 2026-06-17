@@ -1763,11 +1763,14 @@ async function sendOTP(phone, errEl){
       newContainer.id = 'recaptcha-container';
       parent.appendChild(newContainer);
     }
-    // Create brand-new invisible reCAPTCHA
-    window._recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container',{
-      size:'invisible',
-      callback:()=>{}
-    });
+    // Create brand-new invisible reCAPTCHA (compat SDK: auth is NOT first arg)
+    window._recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
+      'recaptcha-container',
+      { size:'invisible', callback:()=>{} },
+      auth   // pass auth instance as 3rd arg for compat SDK v9
+    );
+    // Pre-render to catch domain/config errors early
+    await window._recaptchaVerifier.render();
     const result = await auth.signInWithPhoneNumber(phone, window._recaptchaVerifier);
     _otpConfirmation = result;
     // Show OTP overlay
@@ -1778,14 +1781,24 @@ async function sendOTP(phone, errEl){
     startOTPCountdown(60);
     setTimeout(()=>document.getElementById('otp0').focus(), 200);
   }catch(e){
+    // Reset grecaptcha widget so user can try again
+    try{
+      if(window._recaptchaVerifier){
+        const wId = await window._recaptchaVerifier.render();
+        if(window.grecaptcha) window.grecaptcha.reset(wId);
+      }
+    }catch{}
     if(window._recaptchaVerifier){ try{window._recaptchaVerifier.clear();}catch{} window._recaptchaVerifier=null; }
-    let msg = 'Failed to send OTP. ';
-    if(e.code==='auth/invalid-phone-number') msg='Invalid phone number. Include country code e.g. +601...';
-    else if(e.code==='auth/too-many-requests') msg='Too many attempts. Please wait a few minutes.';
-    else if(e.code==='auth/operation-not-allowed') msg='Phone auth not enabled. Enable it in Firebase Console → Authentication → Sign-in method → Phone.';
-    else msg += (e.message||'');
+    console.error('OTP error code:', e.code, e.message);
+    let msg = '';
+    if(e.code==='auth/invalid-phone-number') msg='Invalid phone number. Use country code e.g. +60123456789';
+    else if(e.code==='auth/too-many-requests') msg='Too many attempts. Wait a few minutes or use a test number.';
+    else if(e.code==='auth/operation-not-allowed') msg='Phone auth not enabled in Firebase Console. Also check SMS region policy allows your country.';
+    else if(e.code==='auth/captcha-check-failed') msg='reCAPTCHA failed. Make sure your domain is in Firebase Authorized Domains.';
+    else if(e.code==='auth/missing-app-credential') msg='App not authorized. Add your domain to Firebase → Authentication → Authorized Domains.';
+    else msg='Error ['+e.code+']: '+(e.message||'');
     if(err) err.textContent=msg;
-    showToast('⚠️ '+msg, 4000);
+    showToast('⚠️ '+msg, 5000);
   }
 }
 
