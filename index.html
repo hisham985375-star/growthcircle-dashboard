@@ -375,6 +375,31 @@ canvas{display:block;}
 .gp-card{background:#fff;border-radius:24px;box-shadow:0 32px 80px rgba(0,0,0,.3);width:100%;max-width:400px;padding:36px 32px;animation:pageIn .4s ease both;}
 .gp-title{font-size:20px;font-weight:800;margin-bottom:6px;}
 .gp-sub{font-size:13px;color:#6e6e73;margin-bottom:22px;line-height:1.5;}
+/* ─── OTP OVERLAY ─── */
+.otp-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(14px);z-index:3000;display:flex;align-items:center;justify-content:center;padding:20px;}
+.otp-card{background:#fff;border-radius:24px;box-shadow:0 32px 80px rgba(0,0,0,.35);width:100%;max-width:380px;padding:36px 28px;text-align:center;animation:pageIn .4s ease both;}
+.otp-icon{font-size:44px;margin-bottom:10px;}
+.otp-title{font-size:20px;font-weight:800;margin-bottom:6px;color:#1d1d1f;}
+.otp-desc{font-size:13px;color:#6e6e73;margin-bottom:24px;line-height:1.55;}
+.otp-phone-display{display:inline-block;background:#F2F2F7;border-radius:8px;padding:4px 12px;font-size:13px;font-weight:600;color:#3730a3;margin-bottom:20px;}
+.otp-inputs{display:flex;gap:10px;justify-content:center;margin-bottom:20px;}
+.otp-inputs input{
+  width:44px;height:54px;text-align:center;font-size:22px;font-weight:700;
+  border:2px solid #E8E8ED;border-radius:12px;outline:none;
+  color:#1d1d1f;background:#F9F9FB;
+  transition:border-color .2s,box-shadow .2s;
+  -moz-appearance:textfield;
+}
+.otp-inputs input::-webkit-outer-spin-button,.otp-inputs input::-webkit-inner-spin-button{-webkit-appearance:none;}
+.otp-inputs input:focus{border-color:#7c3aed;box-shadow:0 0 0 3px rgba(124,58,237,.15);background:#fff;}
+.otp-inputs input.filled{border-color:#3730a3;background:#EEF2FF;}
+.otp-verify-btn{width:100%;padding:14px;background:linear-gradient(135deg,#7c3aed,#3730a3);color:#fff;border:none;border-radius:14px;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:14px;transition:opacity .2s;}
+.otp-verify-btn:disabled{opacity:.5;cursor:not-allowed;}
+.otp-resend{font-size:12.5px;color:#6e6e73;}
+.otp-resend button{background:none;border:none;color:#7c3aed;font-weight:600;cursor:pointer;font-size:12.5px;}
+.otp-resend button:disabled{color:#aaa;cursor:default;}
+.otp-err{color:#dc2626;font-size:12.5px;min-height:18px;margin-bottom:8px;}
+.otp-cancel{background:none;border:none;color:#6e6e73;font-size:12px;cursor:pointer;margin-top:6px;text-decoration:underline;}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
@@ -470,6 +495,31 @@ canvas{display:block;}
     <div style="font-size:11px;color:var(--mute);margin-top:8px;text-align:center">Press <kbd style="background:#F2F2F7;border:1px solid #E8E8ED;border-radius:4px;padding:1px 5px;font-size:10px">Enter</kbd> to continue</div>
   </div>
 </div>
+
+<!-- OTP VERIFICATION OVERLAY -->
+<div id="otp-overlay" class="otp-overlay" style="display:none">
+  <div class="otp-card">
+    <div class="otp-icon">📱</div>
+    <div class="otp-title">Verify Your Number</div>
+    <div class="otp-desc">We sent a 6-digit code to</div>
+    <div class="otp-phone-display" id="otp-phone-label"></div>
+    <div class="otp-inputs">
+      <input type="number" maxlength="1" id="otp0" oninput="otpInput(this,0)" onkeydown="otpKey(event,0)" onpaste="otpPaste(event)"/>
+      <input type="number" maxlength="1" id="otp1" oninput="otpInput(this,1)" onkeydown="otpKey(event,1)"/>
+      <input type="number" maxlength="1" id="otp2" oninput="otpInput(this,2)" onkeydown="otpKey(event,2)"/>
+      <input type="number" maxlength="1" id="otp3" oninput="otpInput(this,3)" onkeydown="otpKey(event,3)"/>
+      <input type="number" maxlength="1" id="otp4" oninput="otpInput(this,4)" onkeydown="otpKey(event,4)"/>
+      <input type="number" maxlength="1" id="otp5" oninput="otpInput(this,5)" onkeydown="otpKey(event,5)"/>
+    </div>
+    <div class="otp-err" id="otp-err"></div>
+    <button class="otp-verify-btn" id="otp-verify-btn" onclick="verifyOTP()" disabled>Verify &amp; Create Account</button>
+    <div class="otp-resend">
+      Didn't receive it? <button id="otp-resend-btn" onclick="resendOTP()" disabled>Resend OTP (<span id="otp-countdown">60</span>s)</button>
+    </div>
+    <br/><button class="otp-cancel" onclick="cancelOTP()">Cancel &amp; go back</button>
+  </div>
+</div>
+<div id="recaptcha-container"></div>
 
 <!-- MOBILE OVERLAY -->
 <div class="mobile-overlay" id="mobile-overlay" onclick="closeSidebar()"></div>
@@ -783,17 +833,17 @@ async function doSignUp(){
   const err=document.getElementById('su-err');
   err.textContent='';
   if(!u||!ph||!p||!p2){err.textContent='All fields are required including phone number.';return;}
-  if(!/^[+\d][\d\s\-().]{6,19}$/.test(ph)){err.textContent='Please enter a valid phone number.';return;}
+  if(!/^[+\d][\d\s\-().]{6,19}$/.test(ph)){err.textContent='Please enter a valid phone number (include country code e.g. +60...).';return;}
   if(p!==p2){err.textContent='Passwords do not match.';return;}
   if(p.length<6){err.textContent='Password must be at least 6 characters.';return;}
   if(u===ADMIN.username){err.textContent='That username is reserved.';return;}
   try{
     const doc=await accountsCol.doc(u).get();
     if(doc.exists){err.textContent='Username already taken.';return;}
-    await accountsCol.doc(u).set({password:p,phone:ph,role:'member',provider:'password',createdAt:Date.now()});
-    loginUser({username:u,role:'member',phone:ph});
-    logToSheets(u,ph,'Sign Up','member');
-  }catch{err.textContent='Error creating account. Try again.';}
+  }catch{err.textContent='Error checking username. Try again.';return;}
+  // Store pending data and send OTP
+  window._pendingSignup={username:u,phone:ph,password:p};
+  await sendOTP(ph,err);
 }
 
 async function doGoogleSignIn(){
@@ -1620,6 +1670,171 @@ document.getElementById('gp-overlay').addEventListener('keydown',function(e){
     gsap.to(btn,{scale:.94,duration:.08,ease:'power2.in',yoyo:true,repeat:1});
   });
 })();
+
+/* ═══════════════════════════════════════
+   OTP PHONE VERIFICATION
+═══════════════════════════════════════ */
+let _otpConfirmation = null;
+let _otpCountdownTimer = null;
+
+/* ── Helpers for 6-box OTP input ── */
+function otpInput(el, idx){
+  // Keep only 1 digit
+  el.value = el.value.slice(-1).replace(/[^0-9]/,'');
+  el.classList.toggle('filled', el.value !== '');
+  // Auto-advance
+  if(el.value && idx < 5) document.getElementById('otp'+(idx+1)).focus();
+  // Enable verify button when all 6 filled
+  const code = getOTPValue();
+  document.getElementById('otp-verify-btn').disabled = code.length < 6;
+}
+
+function otpKey(e, idx){
+  if(e.key==='Backspace'){
+    const el=document.getElementById('otp'+idx);
+    if(!el.value && idx>0){ document.getElementById('otp'+(idx-1)).focus(); }
+    el.value=''; el.classList.remove('filled');
+    document.getElementById('otp-verify-btn').disabled=true;
+  }
+  if(e.key==='Enter'){ const c=getOTPValue(); if(c.length===6) verifyOTP(); }
+}
+
+function otpPaste(e){
+  e.preventDefault();
+  const digits=(e.clipboardData.getData('text').replace(/\D/g,'')).slice(0,6);
+  digits.split('').forEach((d,i)=>{
+    const inp=document.getElementById('otp'+i);
+    if(inp){ inp.value=d; inp.classList.add('filled'); }
+  });
+  const last=Math.min(digits.length,5);
+  document.getElementById('otp'+last)?.focus();
+  document.getElementById('otp-verify-btn').disabled=digits.length<6;
+}
+
+function getOTPValue(){
+  let code='';
+  for(let i=0;i<6;i++) code+=document.getElementById('otp'+i)?.value||'';
+  return code;
+}
+
+function clearOTPInputs(){
+  for(let i=0;i<6;i++){
+    const inp=document.getElementById('otp'+i);
+    if(inp){ inp.value=''; inp.classList.remove('filled'); }
+  }
+  document.getElementById('otp-verify-btn').disabled=true;
+}
+
+function startOTPCountdown(seconds=60){
+  clearInterval(_otpCountdownTimer);
+  const resendBtn=document.getElementById('otp-resend-btn');
+  const countEl=document.getElementById('otp-countdown');
+  resendBtn.disabled=true;
+  let remaining=seconds;
+  countEl.textContent=remaining;
+  _otpCountdownTimer=setInterval(()=>{
+    remaining--;
+    countEl.textContent=remaining;
+    if(remaining<=0){
+      clearInterval(_otpCountdownTimer);
+      resendBtn.disabled=false;
+      resendBtn.innerHTML='Resend OTP';
+    } else {
+      resendBtn.innerHTML=`Resend OTP (<span id="otp-countdown">${remaining}</span>s)`;
+    }
+  },1000);
+}
+
+/* ── Send OTP via Firebase Phone Auth ── */
+async function sendOTP(phone, errEl){
+  const err = errEl || document.getElementById('otp-err');
+  try{
+    // Reset reCAPTCHA if already used
+    if(window._recaptchaVerifier){
+      try{ window._recaptchaVerifier.clear(); }catch{}
+      window._recaptchaVerifier = null;
+    }
+    window._recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container',{
+      size:'invisible',
+      callback:()=>{}
+    });
+    const result = await auth.signInWithPhoneNumber(phone, window._recaptchaVerifier);
+    _otpConfirmation = result;
+    // Show OTP overlay
+    document.getElementById('otp-phone-label').textContent = phone;
+    document.getElementById('otp-overlay').style.display = 'flex';
+    document.getElementById('otp-err').textContent = '';
+    clearOTPInputs();
+    startOTPCountdown(60);
+    setTimeout(()=>document.getElementById('otp0').focus(), 200);
+  }catch(e){
+    if(window._recaptchaVerifier){ try{window._recaptchaVerifier.clear();}catch{} window._recaptchaVerifier=null; }
+    let msg = 'Failed to send OTP. ';
+    if(e.code==='auth/invalid-phone-number') msg='Invalid phone number. Include country code e.g. +601...';
+    else if(e.code==='auth/too-many-requests') msg='Too many attempts. Please wait a few minutes.';
+    else if(e.code==='auth/operation-not-allowed') msg='Phone auth not enabled. Enable it in Firebase Console → Authentication → Sign-in method → Phone.';
+    else msg += (e.message||'');
+    if(err) err.textContent=msg;
+    showToast('⚠️ '+msg, 4000);
+  }
+}
+
+/* ── Verify OTP and complete signup ── */
+async function verifyOTP(){
+  const code = getOTPValue();
+  const err = document.getElementById('otp-err');
+  err.textContent = '';
+  if(code.length < 6){ err.textContent='Please enter all 6 digits.'; return; }
+  const btn = document.getElementById('otp-verify-btn');
+  btn.disabled = true;
+  btn.textContent = 'Verifying…';
+  try{
+    await _otpConfirmation.confirm(code);
+    // OTP verified ✅ — sign out of Firebase Phone Auth session (we use custom auth)
+    await auth.signOut();
+    // Create account in Firestore
+    const {username,phone,password} = window._pendingSignup;
+    await accountsCol.doc(username).set({password,phone,role:'member',provider:'password',phoneVerified:true,createdAt:Date.now()});
+    loginUser({username,role:'member',phone});
+    logToSheets(username,phone,'Sign Up','member');
+    // Clean up
+    document.getElementById('otp-overlay').style.display='none';
+    clearInterval(_otpCountdownTimer);
+    window._pendingSignup = null;
+    _otpConfirmation = null;
+    showToast('✅ Phone verified! Welcome to GrowthCircle.',3500);
+  }catch(e){
+    btn.disabled = false;
+    btn.textContent = 'Verify & Create Account';
+    if(e.code==='auth/invalid-verification-code'||e.code==='auth/code-expired'){
+      err.textContent='Incorrect or expired code. Please try again.';
+      clearOTPInputs(); document.getElementById('otp0').focus();
+    } else {
+      err.textContent = e.message||'Verification failed.';
+    }
+  }
+}
+
+/* ── Resend OTP ── */
+async function resendOTP(){
+  if(!window._pendingSignup) return;
+  const err = document.getElementById('otp-err');
+  err.textContent = 'Sending new code…';
+  clearOTPInputs();
+  document.getElementById('otp-resend-btn').disabled=true;
+  await sendOTP(window._pendingSignup.phone, err);
+  err.textContent='';
+  startOTPCountdown(60);
+}
+
+/* ── Cancel OTP ── */
+function cancelOTP(){
+  document.getElementById('otp-overlay').style.display='none';
+  clearInterval(_otpCountdownTimer);
+  _otpConfirmation = null;
+  window._pendingSignup = null;
+  if(window._recaptchaVerifier){ try{window._recaptchaVerifier.clear();}catch{} window._recaptchaVerifier=null; }
+}
 
 </script>
 </body>
