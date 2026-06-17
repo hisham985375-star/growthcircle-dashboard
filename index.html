@@ -895,16 +895,6 @@ async function handleGoogleUser(user){
 }
 
 async function doGoogleSignIn(){
-  if(isMobile()){
-    // Mobile: use redirect (popups don't work reliably on mobile)
-    try{
-      await auth.signInWithRedirect(googleProvider);
-    }catch(e){
-      showToast('Error ['+e.code+']: '+(e.message||'Google sign-in failed'),5000);
-    }
-    return;
-  }
-  // Desktop: use popup, fallback to redirect if blocked
   try{
     const result=await auth.signInWithPopup(googleProvider);
     await handleGoogleUser(result.user);
