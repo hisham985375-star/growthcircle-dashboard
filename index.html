@@ -1749,11 +1749,21 @@ function startOTPCountdown(seconds=60){
 async function sendOTP(phone, errEl){
   const err = errEl || document.getElementById('otp-err');
   try{
-    // Reset reCAPTCHA if already used
+    // Fully destroy old reCAPTCHA verifier
     if(window._recaptchaVerifier){
       try{ window._recaptchaVerifier.clear(); }catch{}
       window._recaptchaVerifier = null;
     }
+    // Destroy and recreate the container element so reCAPTCHA has a fresh mount
+    const oldContainer = document.getElementById('recaptcha-container');
+    if(oldContainer){
+      const parent = oldContainer.parentNode;
+      parent.removeChild(oldContainer);
+      const newContainer = document.createElement('div');
+      newContainer.id = 'recaptcha-container';
+      parent.appendChild(newContainer);
+    }
+    // Create brand-new invisible reCAPTCHA
     window._recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container',{
       size:'invisible',
       callback:()=>{}
