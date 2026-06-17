@@ -719,23 +719,19 @@ async function boot(){
   await loadSheetsUrl();
   setupListeners();
 
-  // Wait for Firebase to resolve its auth state (handles redirect result automatically)
-  const firebaseUser = await new Promise(resolve=>{
-    const unsub = auth.onAuthStateChanged(u=>{ unsub(); resolve(u); });
-  });
+  // Handle Google redirect result FIRST (for mobile sign-in)
+  try {
+    const redir = await auth.getRedirectResult();
+    if(redir && redir.user) {
+      await handleGoogleUser(redir.user);
+    }
+  } catch(e) {
+    console.warn('Redirect auth error:', e.code || e);
+    showToast('Google login error ['+e.code+']', 5000);
+  }
 
   await new Promise(r=>setTimeout(r,800));
   dbReady=true;
-
-  // If Firebase has a Google user but we have no session → came from redirect or popup
-  if(firebaseUser && !currentUser){
-    try{
-      await handleGoogleUser(firebaseUser);
-    }catch(e){
-      console.warn('Google auth error:',e.code||e);
-      showToast('Google sign-in error: '+(e.code||e.message||'unknown'),4000);
-    }
-  }
 
   const ls=document.getElementById('loading-screen');
   ls.classList.add('fade-out');
