@@ -718,15 +718,25 @@ async function boot(){
   await checkDataVersion();
   await loadSheetsUrl();
   setupListeners();
-  // Handle Google redirect result (mobile sign-in)
-  try{
-    const redir=await auth.getRedirectResult();
-    if(redir&&redir.user){
-      await handleGoogleUser(redir.user);
-    }
-  }catch(e){ console.warn('Redirect result error:',e.code); }
-  await new Promise(r=>setTimeout(r,1000));
+
+  // Wait for Firebase to resolve its auth state (handles redirect result automatically)
+  const firebaseUser = await new Promise(resolve=>{
+    const unsub = auth.onAuthStateChanged(u=>{ unsub(); resolve(u); });
+  });
+
+  await new Promise(r=>setTimeout(r,800));
   dbReady=true;
+
+  // If Firebase has a Google user but we have no session → came from redirect or popup
+  if(firebaseUser && !currentUser){
+    try{
+      await handleGoogleUser(firebaseUser);
+    }catch(e){
+      console.warn('Google auth error:',e.code||e);
+      showToast('Google sign-in error: '+(e.code||e.message||'unknown'),4000);
+    }
+  }
+
   const ls=document.getElementById('loading-screen');
   ls.classList.add('fade-out');
   setTimeout(()=>ls.classList.add('hidden'),500);
@@ -890,26 +900,29 @@ async function handleGoogleUser(user){
 
 async function doGoogleSignIn(){
   if(isMobile()){
-    // Mobile: use redirect (popups are blocked on mobile browsers)
-    try{ await auth.signInWithRedirect(googleProvider); }
-    catch(e){ showToast('Google sign-in failed. Try again.',3000); }
+    // Mobile: use redirect (popups don't work reliably on mobile)
+    try{
+      await auth.signInWithRedirect(googleProvider);
+    }catch(e){
+      showToast('Error ['+e.code+']: '+(e.message||'Google sign-in failed'),5000);
+    }
     return;
   }
-  // Desktop: use popup
+  // Desktop: use popup, fallback to redirect if blocked
   try{
     const result=await auth.signInWithPopup(googleProvider);
     await handleGoogleUser(result.user);
   }catch(e){
     if(e.code==='auth/popup-blocked'||e.code==='auth/popup-closed-by-user'){
-      // Fallback to redirect if popup blocked
       try{ await auth.signInWithRedirect(googleProvider); }catch{}
       return;
     }
-    const err=document.getElementById('si-err')||document.getElementById('su-err');
-    if(err){
-      if(e.code==='auth/operation-not-allowed') err.textContent='Google sign-in not enabled in Firebase Console.';
-      else err.textContent='Google sign-in failed. Try again.';
-    }
+    const errEl=document.getElementById('si-err')||document.getElementById('su-err');
+    if(errEl) errEl.textContent='['+e.code+'] '+(
+      e.code==='auth/operation-not-allowed'?'Enable Google sign-in in Firebase Console.':
+      e.code==='auth/unauthorized-domain'?'Add your domain to Firebase Authorized Domains.':
+      e.message||'Google sign-in failed.'
+    );
   }
 }
 
