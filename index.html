@@ -356,13 +356,27 @@ canvas{display:block;}
   .score-opt{width:34px;height:34px;font-size:13px;}
 }
 /* ─── CUSTOM CURSOR ─── */
-#cursor-dot{position:fixed;width:8px;height:8px;background:#3730a3;border-radius:50%;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);transition:background .2s;mix-blend-mode:multiply;}
-#cursor-ring{position:fixed;width:36px;height:36px;border:2px solid rgba(55,48,163,.4);border-radius:50%;pointer-events:none;z-index:99998;transform:translate(-50%,-50%);transition:width .2s,height .2s,border-color .2s;}
-body:has(.overlay) #cursor-dot{background:#7c3aed;}
-body:has(.login-card) #cursor-dot{background:#fff;}
-body:has(.login-card) #cursor-ring{border-color:rgba(255,255,255,.3);}
-.btn:hover ~ #cursor-ring,.nav-item:hover ~ #cursor-ring{width:52px;height:52px;}
-@media(pointer:coarse){#cursor-dot,#cursor-ring{display:none;}}
+* { cursor: none !important; }
+#cursor-dot{
+  position:fixed;width:10px;height:10px;
+  background:radial-gradient(circle,#a78bfa,#7c3aed);
+  border-radius:50%;pointer-events:none;z-index:99999;
+  transform:translate(-50%,-50%);
+  box-shadow:0 0 12px 4px rgba(124,58,237,.5);
+  transition:transform .1s,width .2s,height .2s,background .3s;
+}
+#cursor-ring{
+  position:fixed;width:38px;height:38px;
+  border:2px solid rgba(124,58,237,.55);
+  border-radius:50%;pointer-events:none;z-index:99998;
+  transform:translate(-50%,-50%);
+  transition:border-color .3s;
+  box-shadow:0 0 8px rgba(124,58,237,.2);
+}
+#cursor-dot.clicking{transform:translate(-50%,-50%) scale(.6);}
+#cursor-dot.hovering{width:14px;height:14px;background:radial-gradient(circle,#c4b5fd,#7c3aed);}
+#cursor-ring.hovering{width:54px;height:54px;border-color:rgba(124,58,237,.8);}
+@media(pointer:coarse){*{cursor:auto!important;}#cursor-dot,#cursor-ring{display:none;}}
 /* ─── LOGIN PARTICLES ─── */
 #particles{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
 .particle{position:absolute;border-radius:50%;opacity:.25;animation:float linear infinite;}
@@ -392,7 +406,10 @@ body:has(.login-card) #cursor-ring{border-color:rgba(255,255,255,.3);}
 
 <!-- LOADING -->
 <div id="loading-screen">
-  <div class="ld-logo">🌱 GrowthCircle</div>
+  <div class="ld-logo">
+    <svg width="28" height="28" viewBox="0 0 100 100" style="vertical-align:middle;margin-right:6px"><rect width="100" height="100" rx="22" fill="#1e2235"/><path d="M20 75V30l18 28 18-28v45" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><path d="M68 75V35" stroke="#4ade80" stroke-width="9" stroke-linecap="round"/><polygon points="68,22 61,37 75,37" fill="#4ade80"/></svg>
+    GrowthCircle
+  </div>
   <div class="ld-sub">Connecting to database…</div>
   <div class="spinner"></div>
 </div>
@@ -400,7 +417,10 @@ body:has(.login-card) #cursor-ring{border-color:rgba(255,255,255,.3);}
 <!-- LOGIN -->
 <div id="login-screen" class="hidden">
   <div class="login-card" id="login-card">
-    <div class="login-logo">🌱 GrowthCircle</div>
+    <div class="login-logo">
+      <svg width="36" height="36" viewBox="0 0 100 100" style="vertical-align:middle;margin-right:8px;border-radius:10px"><rect width="100" height="100" rx="22" fill="#1e2235"/><path d="M20 75V30l18 28 18-28v45" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><path d="M68 75V35" stroke="#4ade80" stroke-width="9" stroke-linecap="round"/><polygon points="68,22 61,37 75,37" fill="#4ade80"/></svg>
+      GrowthCircle
+    </div>
     <div class="login-sub">Community Dashboard</div>
     <div class="tab-bar">
       <button class="tab-btn active" id="tab-signin" onclick="switchTab('signin')">Sign In</button>
@@ -410,8 +430,8 @@ body:has(.login-card) #cursor-ring{border-color:rgba(255,255,255,.3);}
     <!-- SIGN IN -->
     <div id="form-signin">
       <div class="field-wrap">
-        <label>Username</label>
-        <input type="text" id="si-user" placeholder="Enter username" autocomplete="username"/>
+        <label>Username or Phone</label>
+        <input type="text" id="si-user" placeholder="Username or +60123456789" autocomplete="username"/>
       </div>
       <div class="field-wrap">
         <label>Password</label>
@@ -479,7 +499,10 @@ body:has(.login-card) #cursor-ring{border-color:rgba(255,255,255,.3);}
 <div id="app-screen" class="hidden">
   <div class="sidebar" id="sidebar">
     <div class="sidebar-logo">
-      <div class="sidebar-logo-text">🌱 GrowthCircle</div>
+      <div class="sidebar-logo-text">
+        <svg width="22" height="22" viewBox="0 0 100 100" style="vertical-align:middle;margin-right:6px;border-radius:7px"><rect width="100" height="100" rx="22" fill="#1e2235"/><path d="M20 75V30l18 28 18-28v45" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><path d="M68 75V35" stroke="#4ade80" stroke-width="9" stroke-linecap="round"/><polygon points="68,22 61,37 75,37" fill="#4ade80"/></svg>
+        GrowthCircle
+      </div>
       <div class="sidebar-logo-sub">Community Dashboard</div>
     </div>
     <nav class="sidebar-nav">
@@ -734,16 +757,19 @@ async function doSignIn(){
   const err=document.getElementById('si-err');
   err.textContent='';
   if(!u||!p){err.textContent='Please fill in all fields.';return;}
+  // Admin check
   if(u===ADMIN.username&&p===ADMIN.password){
     loginUser({username:u,role:'admin'});
     logToSheets(u,'','Sign In','admin');
     return;
   }
+  // Guest member
   if(u==='member'&&p==='view123'){
     loginUser({username:u,role:'member'});
     logToSheets(u,'','Sign In','member');
     return;
   }
+  // Try by username first
   try{
     const doc=await accountsCol.doc(u).get();
     if(doc.exists&&doc.data().password===p){
@@ -752,7 +778,22 @@ async function doSignIn(){
       return;
     }
   }catch{}
-  shakeCard();err.textContent='Incorrect username or password.';
+  // Try by phone number if input looks like a phone
+  const isPhone=/^[+\d][\d\s\-().]{5,19}$/.test(u);
+  if(isPhone){
+    try{
+      const snap=await accountsCol.where('phone','==',u).get();
+      if(!snap.empty){
+        const d=snap.docs[0].data();
+        if(d.password===p){
+          loginUser({username:snap.docs[0].id,role:'member',phone:d.phone});
+          logToSheets(snap.docs[0].id,d.phone,'Sign In','member');
+          return;
+        }
+      }
+    }catch{}
+  }
+  shakeCard();err.textContent='Incorrect username, phone, or password.';
 }
 
 async function doSignUp(){
@@ -1441,13 +1482,51 @@ document.getElementById('gp-overlay').addEventListener('keydown',function(e){
    GSAP ANIMATIONS
 ═══════════════════════════════════════ */
 (function initAnimations(){
-  /* 1. Custom cursor */
+  /* 1. Custom cursor — fully rebuilt */
   const dot=document.getElementById('cursor-dot');
   const ring=document.getElementById('cursor-ring');
+  if(!dot||!ring){return;}
   let mx=0,my=0,rx=0,ry=0;
-  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;if(dot){dot.style.left=mx+'px';dot.style.top=my+'px';}});
-  function animRing(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;if(ring){ring.style.left=rx+'px';ring.style.top=ry+'px';}requestAnimationFrame(animRing);}
+  let visible=false;
+
+  // Show cursor only after first mouse move
+  dot.style.opacity='0'; ring.style.opacity='0';
+
+  document.addEventListener('mousemove',e=>{
+    mx=e.clientX; my=e.clientY;
+    dot.style.left=mx+'px'; dot.style.top=my+'px';
+    if(!visible){ visible=true; dot.style.opacity='1'; ring.style.opacity='1'; }
+  });
+
+  // Smooth lagging ring
+  function animRing(){
+    rx+=(mx-rx)*.10; ry+=(my-ry)*.10;
+    ring.style.left=Math.round(rx*10)/10+'px';
+    ring.style.top=Math.round(ry*10)/10+'px';
+    requestAnimationFrame(animRing);
+  }
   animRing();
+
+  // Hover effect on interactive elements
+  const hoverTargets='a,button,input,select,textarea,[onclick],[role="button"],.nav-item,.tab-btn,.score-opt,.stat-card';
+  document.addEventListener('mouseover',e=>{
+    if(e.target.closest(hoverTargets)){
+      dot.classList.add('hovering'); ring.classList.add('hovering');
+    }
+  });
+  document.addEventListener('mouseout',e=>{
+    if(e.target.closest(hoverTargets)){
+      dot.classList.remove('hovering'); ring.classList.remove('hovering');
+    }
+  });
+
+  // Click squish
+  document.addEventListener('mousedown',()=>dot.classList.add('clicking'));
+  document.addEventListener('mouseup',()=>dot.classList.remove('clicking'));
+
+  // Hide cursor when it leaves window
+  document.addEventListener('mouseleave',()=>{dot.style.opacity='0';ring.style.opacity='0';visited=false;});
+  document.addEventListener('mouseenter',()=>{dot.style.opacity='1';ring.style.opacity='1';});
 
   /* 2. Magnetic buttons */
   function addMagnetic(el){
