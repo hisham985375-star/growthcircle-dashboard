@@ -840,10 +840,11 @@ async function doSignUp(){
   try{
     const doc=await accountsCol.doc(u).get();
     if(doc.exists){err.textContent='Username already taken.';return;}
-  }catch{err.textContent='Error checking username. Try again.';return;}
-  // Store pending data and send OTP
-  window._pendingSignup={username:u,phone:ph,password:p};
-  await sendOTP(ph,err);
+    await accountsCol.doc(u).set({password:p,phone:ph,role:'member',provider:'password',createdAt:Date.now()});
+    loginUser({username:u,role:'member',phone:ph});
+    logToSheets(u,ph,'Sign Up','member');
+    showToast('Welcome to GrowthCircle!',3000);
+  }catch(e){err.textContent='Error creating account. Try again.';}
 }
 
 async function doGoogleSignIn(){
