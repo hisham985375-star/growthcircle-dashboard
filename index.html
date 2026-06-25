@@ -10,6 +10,57 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <style>
+/* --------------------------------------------------------------
+   Wispr‑Flow “pushing” animation for the Visme embed
+   -------------------------------------------------------------- */
+.visme-wrapper {
+  position: relative;      /* parent for absolute positioning */
+  overflow: hidden;        /* keeps the character inside the wrapper */
+}
+
+/* container for the moving character */
+.wispr-push {
+  position: absolute;
+  top: 0;                  /* start at the top edge of the Visme form */
+  left: -120px;            /* start off‑screen (left) */
+  width: 100px;
+  height: 100px;
+  pointer-events: none;    /* never block clicks on the form */
+  z-index: 5;              /* above the Visme iframe */
+}
+
+/* the character image */
+.wispr-pusher {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* keyframes – slide in → pause → push ↓ → slide out */
+@keyframes wisprPush {
+  0%   { left: -120px; transform: translateY(0); }
+  30%  { left: calc(50% - 50px); transform: translateY(0); }   /* centre */
+  40%  { left: calc(50% - 50px); transform: translateY(0); }   /* short pause */
+  45%  { left: calc(50% - 50px); transform: translateY(6px); }/* push down */
+  55%  { left: calc(50% - 50px); transform: translateY(6px); }/* hold push */
+  60%  { left: calc(100% + 20px); transform: translateY(0); }/* run off right */
+  100% { left: calc(100% + 20px); transform: translateY(0); }
+}
+
+/* run the animation once when the page loads */
+.wispr-push {
+  animation: wisprPush 1.8s ease-out forwards;
+}
+
+/* optional – tiny wiggle while pushing (purely cosmetic) */
+.wispr-pusher {
+  animation: wisprWiggle 0.6s linear 0.4s infinite;
+}
+@keyframes wisprWiggle {
+  0%,100% { transform: rotate(0deg); }
+  50%     { transform: rotate(3deg); }
+}
+  
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 :root{
   --bg:#F5F5F7;--card:#fff;--border:#E8E8ED;
@@ -428,10 +479,12 @@ canvas{display:block;}
 <!-- ---------------------------------------------------- -->
 <!--  Visme animation – B2B Newsletter Subscription -->
 <!-- ---------------------------------------------------- -->
-<div id="login-screen" class="hidden" style="position:relative;">
-  <!-- Full‑screen Visme embed (background) -->
-  <div class="visme_d visme-d-anim"
-       style="position:absolute; inset:0; z-index:-1;"
+<!-- ----------------------------------------------------
+     Visme form with Wispr‑Flow “pushing” character
+     ---------------------------------------------------- -->
+<div class="visme-wrapper" style="position:relative; overflow:hidden;">
+  <!-- Visme form (unchanged) -->
+  <div class="visme_d"
        data-title="B2B Newsletter Subscription"
        data-url="nmne4j4m-untitled-project?fullPage=true"
        data-domain="forms"
@@ -440,6 +493,13 @@ canvas{display:block;}
        data-form-id="187403"></div>
   <script src="https://static-bundles.visme.co/forms/vismeforms-embed.js"></script>
 
+  <!-- Wispr‑Flow character that will push the form -->
+  <div class="wispr-push">
+    <img src="https://static.wispr.io/character/pusher.png"
+         alt="Pusher"
+         class="wispr-pusher">
+  </div>
+</div>
   <!-- Existing login card (sign‑in / sign‑up) -->
   <div class="login-card" id="login-card">
     <!-- SIGN IN -->
