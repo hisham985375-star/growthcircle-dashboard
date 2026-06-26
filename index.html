@@ -139,7 +139,7 @@ input,select,textarea{font-family:var(--font);}
 .ctrl-bar input[type=text],.ctrl-bar input[type=date],.ctrl-bar select{padding:9px 13px;border-radius:11px;border:1.5px solid var(--border);background:#fff;font-size:13px;color:var(--text);outline:none;transition:border-color var(--ease);}
 .ctrl-bar input:focus,.ctrl-bar select:focus{border-color:var(--accent);}
 .search-wrap{position:relative;flex:1;min-width:160px;}
-.search-wrap input{width:100%;padding-left:34px;}
+.search-wrap input{width:100%;padding:9px 13px 9px 34px;}
 .search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--mute);font-size:14px;pointer-events:none;}
 .btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:11px;border:none;font-size:13px;font-weight:600;transition:all var(--ease);cursor:pointer;white-space:nowrap;}
 .btn-primary{background:var(--accent);color:#fff;}
@@ -753,17 +753,7 @@ function startMidnightReset(){
     const di=document.getElementById('date-inp');
     if(di)di.value=currentDate;
   }
-  // Poll every 60 seconds — reliable even in background tabs
-  setInterval(()=>{
-    const newDay=today();
-    if(newDay!==currentDate){
-      currentDate=newDay;
-      const di=document.getElementById('date-inp');
-      if(di)di.value=currentDate;
-      if(currentPage)renderPage();
-      showToast('📅 New day! Date updated to '+new Date().toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'}),4000);
-    }
-  },60000); // check every 60 seconds
+  
 }
 
 /* ═══════════════════════════════════════
