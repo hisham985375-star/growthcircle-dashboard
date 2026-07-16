@@ -44,21 +44,44 @@ create table if not exists public.members (
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
--- 3. Create Daily Records Table (scores and notes)
+-- 3. Create Daily Records Table (7 checkboxed habits)
 create table if not exists public.records (
   id text primary key, -- Compounded as member_id_date (e.g. member-uuid_2026-07-15)
   member_id uuid references public.members(id) on delete cascade on update cascade not null,
   date date not null,
-  task_score integer check (task_score between 0 and 5) default 0,
-  task_text text,
-  engagement integer check (engagement between 0 and 5) default 0,
-  attendance integer check (attendance between 0 and 5) default 0,
-  growth integer check (growth between 0 and 5) default 0,
-  habit text,
-  screen_time numeric default 0,
-  att_level integer default 0,
+  slept_at_1030 boolean default false not null,
+  woke_up_5 boolean default false not null,
+  time_blocked boolean default false not null,
+  ate_frog boolean default false not null,
+  physical_habit boolean default false not null,
+  screen_time_target boolean default false not null,
+  night_review boolean default false not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
+
+-- Idempotent column updates for existing tables
+do $$
+begin
+  alter table public.records add column if not exists slept_at_1030 boolean default false not null;
+  alter table public.records add column if not exists woke_up_5 boolean default false not null;
+  alter table public.records add column if not exists time_blocked boolean default false not null;
+  alter table public.records add column if not exists ate_frog boolean default false not null;
+  alter table public.records add column if not exists physical_habit boolean default false not null;
+  alter table public.records add column if not exists screen_time_target boolean default false not null;
+  alter table public.records add column if not exists night_review boolean default false not null;
+
+  -- Drop old columns if they exist
+  alter table public.records drop column if exists task_score;
+  alter table public.records drop column if exists task_text;
+  alter table public.records drop column if exists engagement;
+  alter table public.records drop column if exists attendance;
+  alter table public.records drop column if exists growth;
+  alter table public.records drop column if exists habit;
+  alter table public.records drop column if exists screen_time;
+  alter table public.records drop column if exists att_level;
+exception
+  when others then null;
+end $$;
 
 -- 4. Enable Row Level Security (RLS) on all tables
 alter table public.profiles enable row level security;
@@ -96,6 +119,7 @@ create policy "Allow admin and owner write of members" on public.members
       select 1 from public.profiles p
       where p.id = auth.uid() and (
         p.role = 'admin' or 
+        members.id = auth.uid() or
         lower(members.name) = lower(p.username)
       )
     )
@@ -111,6 +135,7 @@ create policy "Allow admin and owner write of records" on public.records
       select 1 from public.profiles p
       where p.id = auth.uid() and (
         p.role = 'admin' or 
+        records.member_id = auth.uid() or
         exists (
           select 1 from public.members m
           where m.id = records.member_id and lower(m.name) = lower(p.username)

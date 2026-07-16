@@ -214,12 +214,16 @@ input,select,textarea{font-family:var(--font);color:inherit;}
 
 /* ─── TABLE ─── */
 .table-wrap{overflow-x:auto;border-radius:var(--rc);border:1px solid var(--border);background:var(--card);box-shadow:var(--sc);-webkit-overflow-scrolling:touch;}
-table{width:100%;border-collapse:collapse;font-size:13px;min-width:720px;}
-th{text-align:left;padding:12px 16px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--sub);border-bottom:1px solid var(--border);white-space:nowrap;}
-td{padding:12px 16px;border-bottom:1px solid var(--border);vertical-align:middle;color:var(--text);}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:1100px;}
+th{padding:16px 12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text);border-bottom:2px solid var(--border);border-right:1px solid var(--border);vertical-align:top;background:rgba(255,255,255,0.01);text-align:center;}
+th:first-child{text-align:left;border-right:1px solid var(--border);min-width:220px;vertical-align:middle;}
+th:last-child{border-right:none;}
+td{padding:14px 12px;border-bottom:1px solid var(--border);border-right:1px solid var(--border);vertical-align:middle;color:var(--text);text-align:center;}
+td:first-child{text-align:left;border-right:1px solid var(--border);}
+td:last-child{border-right:none;}
 tr:last-child td{border-bottom:none;}
 tr:nth-child(even) td{background:rgba(255,255,255,0.005);}
-tbody tr:hover td{background:rgba(255,255,255,0.025)!important;transition:background 100ms;}
+tbody tr:hover td{background:rgba(255,255,255,0.015)!important;transition:background 100ms;}
 .name-cell{display:flex;align-items:center;gap:10px;}
 .avatar{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;flex-shrink:0;}
 .member-name{font-weight:700;font-size:13px;white-space:nowrap;color:#fff;}
@@ -228,17 +232,71 @@ tbody tr:hover td{background:rgba(255,255,255,0.025)!important;transition:backgr
 .s0,.s1{background:rgba(239,68,68,0.15);color:#fca5a5;}
 .s2,.s3{background:rgba(245,158,11,0.15);color:#fde047;}
 .s4,.s5{background:rgba(16,185,129,0.15);color:#a7f3d0;}
-.dots{display:flex;gap:3px;margin-top:5px;}
-.dot{width:7px;height:7px;border-radius:50%;}
-.dot-fill{background:var(--accent);}
-.dot-empty{background:rgba(255,255,255,0.1);}
-.total-ring{width:42px;height:42px;position:relative;flex-shrink:0;}
+.total-ring{width:42px;height:42px;position:relative;flex-shrink:0;margin:0 auto;}
 .total-ring svg{transform:rotate(-90deg);}
 .total-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:800;color:#fff;}
-.edit-cell{cursor:pointer;border-radius:8px;padding:4px 6px;transition:background var(--ease);}
-.edit-cell:hover{background:rgba(255,255,255,0.05);}
 .action-btns{display:flex;gap:5px;opacity:0;transition:opacity var(--ease);}
 tr:hover .action-btns{opacity:1;}
+
+/* Header Card Layout */
+.th-card{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;}
+.th-card-first{display:flex;align-items:center;gap:12px;padding-left:8px;}
+.th-card-first .th-icon-circle{background:rgba(99,102,241,0.1);color:var(--accent);}
+.th-icon-circle{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:2px;background:rgba(255,255,255,0.03);}
+.th-title{font-family:var(--font-h);font-size:11px;font-weight:800;color:#fff;letter-spacing:-0.2px;line-height:1.2;}
+.th-sub{font-size:9.5px;color:var(--sub);font-weight:500;margin-top:2px;text-transform:none;letter-spacing:0;}
+.th-line{width:32px;height:3px;border-radius:2px;margin-top:6px;background:var(--border);}
+
+/* Header Color Accents */
+.th-blue .th-icon-circle { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+.th-blue .th-line { background: #3b82f6; }
+.th-orange .th-icon-circle { background: rgba(249, 115, 22, 0.1); color: #f97316; }
+.th-orange .th-line { background: #f97316; }
+.th-pink .th-icon-circle { background: rgba(236, 72, 153, 0.1); color: #ec4899; }
+.th-pink .th-line { background: #ec4899; }
+.th-green .th-icon-circle { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+.th-green .th-line { background: #10b981; }
+.th-sky .th-icon-circle { background: rgba(6, 182, 212, 0.1); color: #06b6d4; }
+.th-sky .th-line { background: #06b6d4; }
+.th-purple .th-icon-circle { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
+.th-purple .th-line { background: #8b5cf6; }
+.th-indigo .th-icon-circle { background: rgba(79, 70, 229, 0.1); color: #6366f1; }
+.th-indigo .th-line { background: #6366f1; }
+
+/* Habit Checkbox Cell */
+.habit-checkbox {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: 2px solid rgba(16, 185, 129, 0.4);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--ease);
+  cursor: pointer;
+  background: transparent;
+  color: transparent;
+  font-size: 14px;
+}
+.habit-checkbox:hover {
+  border-color: var(--green);
+  transform: scale(1.05);
+}
+.habit-checkbox.checked {
+  background: var(--green);
+  border-color: var(--green);
+  color: #fff;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+}
+.habit-checkbox.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+.habit-checkbox.disabled:hover {
+  transform: none;
+}
+.pct-sub{font-size:10px;color:var(--mute);margin-top:2px;display:block;}
 
 /* ─── MODAL ─── */
 .overlay{position:fixed;inset:0;background:rgba(3,7,18,0.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px;}
@@ -585,7 +643,19 @@ const isSupabaseConfigured = () => {
 if (isSupabaseConfigured()) {
   try {
     const { createClient } = supabase;
-    supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+    if (!window.name) {
+      window.name = 'gc_tab_' + Math.random().toString(36).substring(2, 10);
+    }
+    supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY, {
+      auth: {
+        storage: window.sessionStorage,
+        storageKey: 'gc_auth_token_' + window.name,
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true,
+        multiTab: false
+      }
+    });
   } catch (e) {
     console.error("Failed to initialize Supabase:", e);
   }
@@ -734,14 +804,13 @@ async function loadData() {
       DB.records = {};
       records.forEach(r => {
         DB.records[recKey(r.member_id, r.date)] = {
-          taskScore: r.task_score,
-          taskText: r.task_text,
-          engagement: r.engagement,
-          attendance: r.attendance,
-          growth: r.growth,
-          habit: r.habit,
-          screenTime: parseFloat(r.screen_time) || 0,
-          attLevel: r.att_level
+          sleptAt1030: !!r.slept_at_1030,
+          wokeUp5: !!r.woke_up_5,
+          timeBlocked: !!r.time_blocked,
+          ateFrog: !!r.ate_frog,
+          physicalHabit: !!r.physical_habit,
+          screenTimeTarget: !!r.screen_time_target,
+          nightReview: !!r.night_review
         };
       });
     }
@@ -763,21 +832,28 @@ async function loadData() {
 /* ─── DATA PERSISTENCE ─── */
 async function saveRec(mid, date, data) {
   const key = recKey(mid, date);
-  const existing = DB.records[key] || { taskScore:0, taskText:'', engagement:0, attendance:0, growth:0, habit:'', screenTime:0, attLevel:0 };
+  const existing = DB.records[key] || {
+    sleptAt1030: false,
+    wokeUp5: false,
+    timeBlocked: false,
+    ateFrog: false,
+    physicalHabit: false,
+    screenTimeTarget: false,
+    nightReview: false
+  };
   const merged = { ...existing, ...data };
 
   const dbRow = {
     id: key,
     member_id: mid,
     date: date,
-    task_score: merged.taskScore,
-    task_text: merged.taskText,
-    engagement: merged.engagement,
-    attendance: merged.attendance,
-    growth: merged.growth,
-    habit: merged.habit,
-    screen_time: merged.screenTime,
-    att_level: merged.attLevel,
+    slept_at_1030: merged.sleptAt1030,
+    woke_up_5: merged.wokeUp5,
+    time_blocked: merged.timeBlocked,
+    ate_frog: merged.ateFrog,
+    physical_habit: merged.physicalHabit,
+    screen_time_target: merged.screenTimeTarget,
+    night_review: merged.nightReview,
     updated_at: new Date().toISOString()
   };
 
@@ -1013,10 +1089,14 @@ function closeSidebar() {
 function renderPage() {
   if (!dbReady) return;
   const ma = document.getElementById('main-area');
+  const isAdmin = currentUser && currentUser.role === 'admin';
   if (currentPage === 'dashboard') renderDashboard(ma);
   else if (currentPage === 'leaderboard') renderLeaderboard(ma);
   else if (currentPage === 'profile') renderProfile(ma);
-  else if (currentPage === 'settings') renderSettings(ma);
+  else if (currentPage === 'settings') {
+    if (isAdmin) renderSettings(ma);
+    else navigate('dashboard');
+  }
 }
 
 /* ─── DASHBOARD ─── */
@@ -1052,7 +1132,7 @@ function renderDashboard(container) {
   <div class="card-grid">
     <div class="stat-card"><div class="stat-label">Members</div><div class="stat-val">${DB.members.length}</div><div class="stat-sub">Total</div></div>
     <div class="stat-card"><div class="stat-label">Active Today</div><div class="stat-val">${activeToday}</div><div class="stat-sub">Have entries</div></div>
-    <div class="stat-card"><div class="stat-label">Avg Score</div><div class="stat-val">${avg}</div><div class="stat-sub">Out of 20</div></div>
+    <div class="stat-card"><div class="stat-label">Avg Score</div><div class="stat-val">${avg}</div><div class="stat-sub">Out of 7</div></div>
     <div class="stat-card"><div class="stat-label">Date</div><div class="stat-val" style="font-size:16px">${dateLabel}</div><div class="stat-sub">Selected</div></div>
   </div>`;
 
@@ -1075,7 +1155,79 @@ function renderDailyTable(isAdmin) {
   
   let h = `<div class="table-wrap"><table>
     <thead><tr>
-      <th>Member</th><th>Task</th><th>Engagement</th><th>Attendance</th><th>Growth</th><th>Screen</th><th>Total</th>
+      <th>
+        <div class="th-card-first">
+          <div class="th-icon-circle">👥</div>
+          <div>
+            <div class="th-title">Member</div>
+            <div class="th-sub">Team Members</div>
+          </div>
+        </div>
+      </th>
+      <th class="th-blue">
+        <div class="th-card">
+          <div class="th-icon-circle">🌙</div>
+          <div class="th-title">Slept at 10:30 PM</div>
+          <div class="th-sub">Habit 1</div>
+          <div class="th-line"></div>
+        </div>
+      </th>
+      <th class="th-orange">
+        <div class="th-card">
+          <div class="th-icon-circle">☀️</div>
+          <div class="th-title">Woke up at 5:00 AM</div>
+          <div class="th-sub">Habit 2</div>
+          <div class="th-line"></div>
+        </div>
+      </th>
+      <th class="th-pink">
+        <div class="th-card">
+          <div class="th-icon-circle">📋</div>
+          <div class="th-title">Time-Blocked</div>
+          <div class="th-sub">To-Do List Ready</div>
+          <div class="th-line"></div>
+        </div>
+      </th>
+      <th class="th-green">
+        <div class="th-card">
+          <div class="th-icon-circle">🐸</div>
+          <div class="th-title">Ate the Frog</div>
+          <div class="th-sub">Hardest Task Done</div>
+          <div class="th-line"></div>
+        </div>
+      </th>
+      <th class="th-sky">
+        <div class="th-card">
+          <div class="th-icon-circle">📝</div>
+          <div class="th-title">Physical Habit</div>
+          <div class="th-sub">Tracker Ticked</div>
+          <div class="th-line"></div>
+        </div>
+      </th>
+      <th class="th-purple">
+        <div class="th-card">
+          <div class="th-icon-circle">📉</div>
+          <div class="th-title">Screen Time</div>
+          <div class="th-sub">Target Achieved</div>
+          <div class="th-line"></div>
+        </div>
+      </th>
+      <th class="th-indigo">
+        <div class="th-card">
+          <div class="th-icon-circle">🌙</div>
+          <div class="th-title">Night Review</div>
+          <div class="th-sub">Submitted</div>
+          <div class="th-line"></div>
+        </div>
+      </th>
+      <th class="th-blue">
+        <div class="th-card">
+          <div class="th-icon-circle">🎯</div>
+          <div class="th-title">Total</div>
+          <div class="th-sub">Daily Score</div>
+          <div class="th-line"></div>
+        </div>
+      </th>
       <th></th>
     </tr></thead><tbody>`;
 
@@ -1084,9 +1236,9 @@ function renderDailyTable(isAdmin) {
   members.forEach(m => {
     const r = getRec(m.id, currentDate);
     const tot = dailyTotal(r);
-    const stColor = r.screenTime > 4 ? 'var(--red)' : r.screenTime > 2 ? 'var(--amber)' : 'var(--green)';
+    const pct = Math.round((tot / 7) * 100);
     
-    const isOwnRow = m.name.toLowerCase() === loggedInUsername;
+    const isOwnRow = (currentUser && m.id === currentUser.uid) || (m.name.toLowerCase() === loggedInUsername);
     const canEdit = isAdmin || isOwnRow;
 
     h += `<tr>
@@ -1101,29 +1253,19 @@ function renderDailyTable(isAdmin) {
           <button class="btn-icon" onclick="showDeleteMember('${m.id}')" style="background:rgba(239,68,68,0.15);color:var(--red)" title="Delete">🗑️</button>
         </div>` : ''}
       </div></td>
-      <td><div class="${canEdit ? 'edit-cell' : ''}" ${canEdit ? `onclick="showEditTask('${m.id}','${currentDate}')"` : ''}> 
-        <span class="score-badge ${scClass(r.taskScore)}">${r.taskScore}/5</span>
-        <div style="font-size:11px;color:var(--sub);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:3px 0">${esc(r.taskText || 'No task')}</div>
-        ${makeDots(r.taskScore)}
-      </div></td>
-      <td><div class="${canEdit ? 'edit-cell' : ''}" ${canEdit ? `onclick="showEditEngagement('${m.id}','${currentDate}')"` : ''}>
-        <span class="score-badge ${scClass(r.engagement)}">${r.engagement}/5</span>
-        <div style="height:4px;width:70px;background:rgba(255,255,255,0.05);border-radius:2px;overflow:hidden;margin-top:6px">
-          <div style="height:100%;width:${(r.engagement / 5) * 100}%;background:var(--accent);border-radius:2px"></div></div>
-      </div></td>
-      <td><div class="${canEdit ? 'edit-cell' : ''}" ${canEdit ? `onclick="showEditAttendance('${m.id}','${currentDate}')"` : ''}>
-        <span class="score-badge ${scClass(r.attLevel)}">${r.attLevel}/5</span>
-        <div style="font-size:11px;color:var(--sub);margin-top:3px">${esc(attLabel(r.attLevel))}</div>
-      </div></td>
-      <td><div class="${canEdit ? 'edit-cell' : ''}" ${canEdit ? `onclick="showEditGrowth('${m.id}','${currentDate}')"` : ''}>
-        <span class="score-badge ${scClass(r.growth)}">${r.growth}/5</span>
-        <div style="font-size:11px;color:var(--sub);margin-top:3px">${esc(r.habit || '—')}</div>
-      </div></td>
-      <td><div class="${canEdit ? 'edit-cell' : ''}" ${canEdit ? `onclick="showEditScreen('${m.id}','${currentDate}')"` : ''}>
-        <span style="font-weight:700;color:${stColor}">${r.screenTime || 0}h</span>
-        <div style="font-size:11px;color:var(--sub);margin-top:2px">${r.screenTime > 4 ? '⚠️ High' : r.screenTime > 2 ? '⚡ Med' : '✅ Low'}</div>
-      </div></td>
-      <td>${makeRing(tot)}</td>
+      
+      ${makeCheckboxCell(m.id, currentDate, 'sleptAt1030', r.sleptAt1030, canEdit)}
+      ${makeCheckboxCell(m.id, currentDate, 'wokeUp5', r.wokeUp5, canEdit)}
+      ${makeCheckboxCell(m.id, currentDate, 'timeBlocked', r.timeBlocked, canEdit)}
+      ${makeCheckboxCell(m.id, currentDate, 'ateFrog', r.ateFrog, canEdit)}
+      ${makeCheckboxCell(m.id, currentDate, 'physicalHabit', r.physicalHabit, canEdit)}
+      ${makeCheckboxCell(m.id, currentDate, 'screenTimeTarget', r.screenTimeTarget, canEdit)}
+      ${makeCheckboxCell(m.id, currentDate, 'nightReview', r.nightReview, canEdit)}
+      
+      <td>
+        ${makeRing(tot)}
+        <span class="pct-sub">${pct}%</span>
+      </td>
       <td>${canEdit ? `<button class="btn btn-ghost btn-sm" onclick="showMemberGraph('${m.id}')">📊</button>` : ''}</td>
     </tr>`;
   });
@@ -1212,7 +1354,7 @@ function renderLeaderboard(container) {
 function renderProfile(container) {
   const n = currentUser.username;
   const days = getLast7();
-  const member = DB.members.find(m => m.name.toLowerCase() === n.toLowerCase());
+  const member = DB.members.find(m => m.id === currentUser.uid) || DB.members.find(m => m.name.toLowerCase() === n.toLowerCase());
 
   let h = `<div class="profile-section">
     <div class="profile-avatar" style="background:${avatarColor(n)}">${initials(n)}</div>
@@ -1222,15 +1364,19 @@ function renderProfile(container) {
     ${currentUser.phone ? `<div style="font-size:13px;color:var(--sub);margin-top:4px">📞 ${esc(currentUser.phone)}</div>` : ''}`;
 
   if (member) {
-    let wt = 0;
-    days.forEach(d => { wt += dailyTotal(getRec(member.id, d)); });
+    let wt = 0, screenCount = 0;
+    days.forEach(d => {
+      const r = getRec(member.id, d);
+      wt += dailyTotal(r);
+      if (r.screenTimeTarget) screenCount++;
+    });
     const tr = getRec(member.id, today());
     const tt = dailyTotal(tr);
     h += `<div class="profile-grid">
-      <div class="profile-stat"><div class="profile-stat-label">Today</div><div class="profile-stat-val" style="color:var(--accent)">${tt}/20</div></div>
-      <div class="profile-stat"><div class="profile-stat-label">Weekly</div><div class="profile-stat-val">${wt}/140</div></div>
-      <div class="profile-stat"><div class="profile-stat-label">Weekly %</div><div class="profile-stat-val">${Math.round(wt / 140 * 100)}%</div></div>
-      <div class="profile-stat"><div class="profile-stat-label">Screen Time</div><div class="profile-stat-val" style="color:${tr.screenTime > 4 ? 'var(--red)' : tr.screenTime > 2 ? 'var(--amber)' : 'var(--green)'}">${tr.screenTime || 0}h</div></div>
+      <div class="profile-stat"><div class="profile-stat-label">Today</div><div class="profile-stat-val" style="color:var(--accent)">${tt}/7</div></div>
+      <div class="profile-stat"><div class="profile-stat-label">Weekly</div><div class="profile-stat-val">${wt}/49</div></div>
+      <div class="profile-stat"><div class="profile-stat-label">Weekly %</div><div class="profile-stat-val">${Math.round(wt / 49 * 100)}%</div></div>
+      <div class="profile-stat"><div class="profile-stat-label">Screen Target</div><div class="profile-stat-val" style="color:var(--green)">${screenCount}/7 days</div></div>
     </div>`;
   }
   h += `</div>`;
@@ -1267,6 +1413,14 @@ async function updateProfileDetails() {
     // 1. Update profiles table
     const { error: pErr } = await supabaseClient.from('profiles').update({ username, phone }).eq('id', currentUser.uid);
     if (pErr) throw pErr;
+
+    // 1.5. Synchronize members table name for student
+    if (currentUser.role === 'student') {
+      const { error: mErr } = await supabaseClient.from('members').update({ name: username }).eq('id', currentUser.uid);
+      if (mErr) {
+        console.error("Failed to update members table name:", mErr);
+      }
+    }
 
     // 2. If password provided, update auth
     if (newPass) {
@@ -1511,100 +1665,25 @@ function selScore(btn, prefix) {
   btn.classList.add('sel');
 }
 
-/* EDIT TASK */
-function showEditTask(mid, date) {
-  const r = getRec(mid, date);
-  let opts = '';
-  for (let i = 0; i <= 5; i++) opts += `<button class="score-opt${r.taskScore === i ? ' sel' : ''}" onclick="selScore(this,'ts')" data-val="${i}">${i}</button>`;
-  showModal(modalWrap('Edit Task Score',
-    `<div class="form-group"><label>Task Score (0–5)</label><div class="score-sel" id="ts-sel">${opts}</div></div>
-     <div class="form-group"><label>Task Description</label><textarea id="task-text">${esc(r.taskText || '')}</textarea></div>
-     <div class="enter-hint">Press <kbd>Enter</kbd> to save</div>`,
-    `<button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="doSaveTask('${mid}','${date}')">Save</button>`
-  ));
+/* TOGGLE HABIT INLINE */
+async function toggleHabit(mid, date, field, newValue) {
+  try {
+    const updateData = {};
+    updateData[field] = newValue;
+    await saveRec(mid, date, updateData);
+    showToast("✅ Habit updated!");
+  } catch (e) {
+    showToast("⚠️ Failed to update habit.");
+  }
 }
 
-async function doSaveTask(mid, date) {
-  const sc = parseInt(document.querySelector('#ts-sel .sel')?.dataset.val ?? 0);
-  const txt = document.getElementById('task-text').value;
-  await saveRec(mid, date, { taskScore: sc, taskText: txt });
-  closeModal();
-  showToast("✅ Task saved!");
-}
-
-/* EDIT ENGAGEMENT */
-function showEditEngagement(mid, date) {
-  const r = getRec(mid, date);
-  let opts = '';
-  for (let i = 0; i <= 5; i++) opts += `<button class="score-opt${r.engagement === i ? ' sel' : ''}" onclick="selScore(this,'eng')" data-val="${i}">${i}</button>`;
-  showModal(modalWrap('Edit Engagement',
-    `<div class="form-group"><label>Engagement Score (0–5)</label><div class="score-sel" id="eng-sel">${opts}</div></div>
-     <div class="enter-hint">Press <kbd>Enter</kbd> to save</div>`,
-    `<button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="doSaveEngagement('${mid}','${date}')">Save</button>`
-  ));
-}
-
-async function doSaveEngagement(mid, date) {
-  const sc = parseInt(document.querySelector('#eng-sel .sel')?.dataset.val ?? 0);
-  await saveRec(mid, date, { engagement: sc });
-  closeModal();
-  showToast("✅ Engagement saved!");
-}
-
-/* EDIT ATTENDANCE */
-function showEditAttendance(mid, date) {
-  const r = getRec(mid, date);
-  const opts = [0, 1, 2, 3, 4, 5].map(i => `<option value="${i}" ${r.attLevel === i ? 'selected' : ''}>${i} – ${attLabel(i) || 'None'}</option>`).join('');
-  showModal(modalWrap('Edit Attendance',
-    `<div class="form-group"><label>Attendance Level (0–5)</label><select id="att-sel">${opts}</select></div>
-     <div class="enter-hint">Press <kbd>Enter</kbd> to save</div>`,
-    `<button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="doSaveAttendance('${mid}','${date}')">Save</button>`
-  ));
-}
-
-async function doSaveAttendance(mid, date) {
-  const v = parseInt(document.getElementById('att-sel').value);
-  await saveRec(mid, date, { attLevel: v, attendance: v });
-  closeModal();
-  showToast("✅ Attendance saved!");
-}
-
-/* EDIT GROWTH */
-function showEditGrowth(mid, date) {
-  const r = getRec(mid, date);
-  let opts = '';
-  for (let i = 0; i <= 5; i++) opts += `<button class="score-opt${r.growth === i ? ' sel' : ''}" onclick="selScore(this,'gr')" data-val="${i}">${i}</button>`;
-  showModal(modalWrap('Edit Growth Check-In',
-    `<div class="form-group"><label>Growth Score (0–5)</label><div class="score-sel" id="gr-sel">${opts}</div></div>
-     <div class="form-group"><label>Habit Note</label><input type="text" id="habit-inp" value="${esc(r.habit || '')}" placeholder="e.g. On track"/></div>
-     <div class="enter-hint">Press <kbd>Enter</kbd> to save</div>`,
-    `<button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="doSaveGrowth('${mid}','${date}')">Save</button>`
-  ));
-}
-
-async function doSaveGrowth(mid, date) {
-  const sc = parseInt(document.querySelector('#gr-sel .sel')?.dataset.val ?? 0);
-  const habit = document.getElementById('habit-inp').value;
-  await saveRec(mid, date, { growth: sc, habit });
-  closeModal();
-  showToast("✅ Growth saved!");
-}
-
-/* EDIT SCREEN TIME */
-function showEditScreen(mid, date) {
-  const r = getRec(mid, date);
-  showModal(modalWrap('Edit Screen Time',
-    `<div class="form-group"><label>Screen Time (hours)</label><input type="number" id="st-inp" min="0" max="24" step="0.5" value="${r.screenTime || 0}" autofocus/></div>
-     <div class="enter-hint">Press <kbd>Enter</kbd> to save</div>`,
-    `<button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="doSaveScreen('${mid}','${date}')">Save</button>`
-  ));
-}
-
-async function doSaveScreen(mid, date) {
-  const v = parseFloat(document.getElementById('st-inp').value) || 0;
-  await saveRec(mid, date, { screenTime: v });
-  closeModal();
-  showToast("✅ Screen time saved!");
+function makeCheckboxCell(mid, date, field, value, canEdit) {
+  return `<td>
+    <div class="habit-checkbox ${value ? 'checked' : ''} ${!canEdit ? 'disabled' : ''}" 
+         ${canEdit ? `onclick="toggleHabit('${mid}', '${date}', '${field}', ${!value})"` : ''}>
+      ✓
+    </div>
+  </td>`;
 }
 
 /* MEMBER METRICS CHART MODAL */
@@ -1613,27 +1692,44 @@ function showMemberGraph(mid) {
   const days = getLast7();
   const labels = days.map(d => new Date(d + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short' }));
   const totals = days.map(d => dailyTotal(getRec(mid, d)));
-  const eng = days.map(d => getRec(mid, d).engagement || 0);
-  const st = days.map(d => getRec(mid, d).screenTime || 0);
+  
+  // Calculate weekly habit completion counts
+  let sleptCount = 0, wokeCount = 0, timeCount = 0, frogCount = 0, physCount = 0, screenCount = 0, nightCount = 0;
+  days.forEach(d => {
+    const r = getRec(mid, d);
+    if (r.sleptAt1030) sleptCount++;
+    if (r.wokeUp5) wokeCount++;
+    if (r.timeBlocked) timeCount++;
+    if (r.ateFrog) frogCount++;
+    if (r.physicalHabit) physCount++;
+    if (r.screenTimeTarget) screenCount++;
+    if (r.nightReview) nightCount++;
+  });
+
   const wt = totals.reduce((a, b) => a + b, 0);
-  const avgE = Math.round(eng.reduce((a, b) => a + b, 0) / 7 * 10) / 10;
-  const avgS = Math.round(st.reduce((a, b) => a + b, 0) / 7 * 10) / 10;
 
   const body = `
     <div class="pills">
-      <div class="pill">Weekly <span>${wt}/140</span></div>
-      <div class="pill">Avg Eng <span>${avgE}/5</span></div>
-      <div class="pill">Avg Screen <span>${avgS}h</span></div>
+      <div class="pill">Weekly Habits <span>${wt}/49</span></div>
+      <div class="pill">Completion Rate <span>${Math.round(wt / 49 * 100)}%</span></div>
     </div>
     <div class="chart-card"><div class="chart-title">📊 Daily Totals (7 days)</div><canvas id="g-bar" height="120"></canvas></div>
-    <div class="chart-card"><div class="chart-title">📈 Engagement Trend</div><canvas id="g-eng" height="100"></canvas></div>
-    <div class="chart-card"><div class="chart-title">⏱️ Screen Time (hrs)</div><canvas id="g-st" height="100"></canvas></div>`;
+    <div class="chart-card" style="padding:16px;background:rgba(255,255,255,0.015);border:1px solid var(--border);border-radius:12px">
+      <div class="chart-title" style="margin-bottom:12px;font-weight:700">📈 Habit Tally (Last 7 Days)</div>
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:12.5px;color:var(--text)">
+        <div style="display:flex;justify-content:space-between"><span>🌙 Slept at 10:30 PM</span><b>${sleptCount}/7</b></div>
+        <div style="display:flex;justify-content:space-between"><span>☀️ Woke up at 5:00 AM</span><b>${wokeCount}/7</b></div>
+        <div style="display:flex;justify-content:space-between"><span>📋 Time-Blocked</span><b>${timeCount}/7</b></div>
+        <div style="display:flex;justify-content:space-between"><span>🐸 Ate the Frog</span><b>${frogCount}/7</b></div>
+        <div style="display:flex;justify-content:space-between"><span>📝 Physical Habit</span><b>${physCount}/7</b></div>
+        <div style="display:flex;justify-content:space-between"><span>📉 Screen Time Target</span><b>${screenCount}/7</b></div>
+        <div style="display:flex;justify-content:space-between"><span>🌙 Night Review</span><b>${nightCount}/7</b></div>
+      </div>
+    </div>`;
   
   showModal(modalWrap(`📊 ${esc(m.name)}`, body, `<button class="btn btn-primary" onclick="closeModal()">Close</button>`, 'lg'));
   setTimeout(() => {
-    drawBar('g-bar', labels, totals, 20);
-    drawLine('g-eng', labels, eng, 5, '#6366f1');
-    drawLine('g-st', labels, st, 8, '#06b6d4');
+    drawBar('g-bar', labels, totals, 7);
   }, 120);
 }
 
@@ -1700,12 +1796,20 @@ function recKey(mid, date) { return mid + '_' + date; }
 function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 function attLabel(l) { return ['', 'Absent', 'Very Late', 'Late', 'On Time', 'Active', 'Champion'][l] || ''; }
 function scClass(s) { if (s <= 1) return 's0'; if (s <= 3) return 's2'; return 's4'; }
-function dailyTotal(r) { return (r.taskScore || 0) + (r.engagement || 0) + (r.attendance || 0) + (r.growth || 0); }
+function dailyTotal(r) {
+  return (r.sleptAt1030 ? 1 : 0) +
+         (r.wokeUp5 ? 1 : 0) +
+         (r.timeBlocked ? 1 : 0) +
+         (r.ateFrog ? 1 : 0) +
+         (r.physicalHabit ? 1 : 0) +
+         (r.screenTimeTarget ? 1 : 0) +
+         (r.nightReview ? 1 : 0);
+}
 function makeAv(name, size = 34) { return `<div class="avatar" style="width:${size}px;height:${size}px;font-size:${Math.round(size * .38)}px;background:${avatarColor(name)}">${initials(name)}</div>`; }
 function makeDots(sc, max = 5) { let h = '<div class="dots">'; for (let i = 1; i <= max; i++) h += `<div class="dot ${i <= sc ? 'dot-fill' : 'dot-empty'}"></div>`; return h + '</div>'; }
-function makeRing(tot, max = 20) {
+function makeRing(tot, max = 7) {
   const pct = Math.min(tot / max, 1), r = 16, circ = 2 * Math.PI * r;
-  const color = tot >= 16 ? 'var(--green)' : tot >= 10 ? 'var(--amber)' : 'var(--accent)';
+  const color = tot >= 5 ? 'var(--green)' : tot >= 3 ? 'var(--amber)' : 'var(--accent)';
   return `<div class="total-ring"><svg width="42" height="42" viewBox="0 0 44 44">
     <circle cx="22" cy="22" r="${r}" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="3"/>
     <circle cx="22" cy="22" r="${r}" fill="none" stroke="${color}" stroke-width="3"
@@ -1722,7 +1826,17 @@ function showToast(msg, ms = 2600) {
 function getLast7() { const days = []; const t = new Date(); for (let i = 6; i >= 0; i--) { const d = new Date(t); d.setDate(d.getDate() - i); days.push(d.toISOString().slice(0, 10)); } return days; }
 function getWeek(dateStr) { const d = new Date(dateStr), dow = d.getDay(), mon = new Date(d); mon.setDate(d.getDate() - (dow === 0 ? 6 : dow - 1)); const days = []; for (let i = 0; i < 7; i++) { const x = new Date(mon); x.setDate(mon.getDate() + i); days.push(x.toISOString().slice(0, 10)); } return days; }
 function getMonth(dateStr) { const d = new Date(dateStr), y = d.getFullYear(), m = d.getMonth(); const days = []; const t = new Date(y, m + 1, 0).getDate(); for (let i = 1; i <= t; i++) days.push(`${y}-${String(m + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`); return days; }
-function getRec(mid, date) { return DB.records[recKey(mid, date)] || { taskScore: 0, taskText: '', engagement: 0, attendance: 0, growth: 0, habit: '', screenTime: 0, attLevel: 0 }; }
+function getRec(mid, date) {
+  return DB.records[recKey(mid, date)] || {
+    sleptAt1030: false,
+    wokeUp5: false,
+    timeBlocked: false,
+    ateFrog: false,
+    physicalHabit: false,
+    screenTimeTarget: false,
+    nightReview: false
+  };
+}
 
 /* ─── ENTER KEY GLOBAL TRIGGER ─── */
 document.addEventListener('keydown', function (e) {
