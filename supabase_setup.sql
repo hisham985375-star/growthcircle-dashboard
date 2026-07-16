@@ -8,17 +8,22 @@ do $$
 begin
   -- Update role values from 'member' to 'student'
   update public.profiles set role = 'student' where role = 'member';
-
+  
   -- Drop old check constraint and add the new one
   alter table public.profiles drop constraint if exists profiles_role_check;
   alter table public.profiles add constraint profiles_role_check check (role in ('admin', 'student'));
   alter table public.profiles alter column role set default 'student';
+exception
+  when others then null; -- ignore if table doesn't exist yet
+end $$;
 
+do $$
+begin
   -- Drop old records foreign key and add the new one with ON UPDATE CASCADE
   alter table public.records drop constraint if exists records_member_id_fkey;
   alter table public.records add constraint records_member_id_fkey foreign key (member_id) references public.members(id) on delete cascade on update cascade;
 exception
-  when others then null; -- ignore if tables don't exist yet
+  when others then null; -- ignore if table doesn't exist yet
 end $$;
 
 -- 1. Create Profiles Table (user settings, role, phone)
