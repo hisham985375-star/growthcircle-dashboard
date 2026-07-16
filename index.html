@@ -453,6 +453,11 @@ canvas{display:block;}
           <input type="password" id="su-pass" placeholder="At least 6 characters"/>
           <button class="eye-btn" onclick="toggleEye('su-pass',this)" type="button">👁</button>
         </div>
+        <div class="field-wrap">
+          <label>Access Code</label>
+          <input type="password" id="su-code" placeholder="Enter student or admin access code"/>
+          <button class="eye-btn" onclick="toggleEye('su-code',this)" type="button">👁</button>
+        </div>
         <button class="login-btn" onclick="doSignUp()">Create Account</button>
         <div class="login-err" id="su-err"></div>
       </div>
@@ -504,22 +509,7 @@ canvas{display:block;}
   </div>
 </div>
 
-<!-- ACCESS CODE GATE OVERLAY (Blocks dashboard until entered) -->
-<div id="access-code-overlay" class="access-overlay hidden">
-  <div class="access-card">
-    <div class="access-icon">🔑</div>
-    <h2 class="access-title">Access Verification</h2>
-    <p class="access-desc">A secure access code is required to enter the dashboard. Please type your code below.</p>
-    <div class="access-input-wrap">
-      <input type="password" id="access-code-input" placeholder="••••••••••••••" autocomplete="off"/>
-    </div>
-    <button class="access-btn" onclick="submitAccessCode()">Verify Access</button>
-    <div class="access-err" id="access-err"></div>
-    <div style="margin-top:14px">
-      <button class="otp-cancel" style="color:var(--mute);text-decoration:underline;font-size:12.5px" onclick="doLogout()">Log out &amp; go back</button>
-    </div>
-  </div>
-</div>
+<!-- ACCESS CODE OVERLAY REMOVED -->
 
 <!-- MOBILE OVERLAY -->
 <div class="mobile-overlay" id="mobile-overlay" onclick="closeSidebar()"></div>
@@ -665,18 +655,8 @@ async function boot() {
         }
       } catch (e) {}
 
-      // Verify access code gateway status
-      const accessGranted = sessionStorage.getItem(SESSION_ACCESS_KEY) === 'true';
-      const storedRole = sessionStorage.getItem(SESSION_ROLE_KEY);
-      
-      if (accessGranted && storedRole) {
-        currentUser.role = storedRole;
-        hideLoading();
-        showApp();
-      } else {
-        hideLoading();
-        showAccessCodeScreen();
-      }
+      hideLoading();
+      showApp();
 
       // Check if we are in Password Recovery flow
       if (event === 'PASSWORD_RECOVERY') {
@@ -684,8 +664,6 @@ async function boot() {
       }
     } else {
       currentUser = null;
-      sessionStorage.removeItem(SESSION_ACCESS_KEY);
-      sessionStorage.removeItem(SESSION_ROLE_KEY);
       hideLoading();
       showLoginScreen();
     }
@@ -705,23 +683,12 @@ function hideLoading() {
 
 function showLoginScreen() {
   document.getElementById('app-screen').classList.add('hidden');
-  document.getElementById('access-code-overlay').classList.add('hidden');
   document.getElementById('login-screen').classList.remove('hidden');
   initFloatingParticles();
 }
 
-function showAccessCodeScreen() {
-  document.getElementById('login-screen').classList.add('hidden');
-  document.getElementById('app-screen').classList.add('hidden');
-  document.getElementById('access-code-overlay').classList.remove('hidden');
-  document.getElementById('access-code-input').value = "";
-  document.getElementById('access-err').textContent = "";
-  setTimeout(() => document.getElementById('access-code-input').focus(), 100);
-}
-
 function showApp() {
   document.getElementById('login-screen').classList.add('hidden');
-  document.getElementById('access-code-overlay').classList.add('hidden');
   document.getElementById('app-screen').classList.remove('hidden');
 
   const n = currentUser.username;
@@ -824,35 +791,7 @@ async function saveRec(mid, date, data) {
   renderPage();
 }
 
-/* ─── ACCESS GATE SUBMISSION ─── */
-async function submitAccessCode() {
-  const code = document.getElementById('access-code-input').value.trim();
-  const err = document.getElementById('access-err');
-  err.textContent = "";
-
-  if (!code) {
-    err.textContent = "Please enter an access code.";
-    return;
-  }
-
-  try {
-    const { data: role, error } = await supabaseClient.rpc('submit_access_code', { input_code: code });
-    if (error || !role) {
-      err.textContent = "Incorrect access code. Please try again.";
-      return;
-    }
-
-    // Save access state
-    sessionStorage.setItem(SESSION_ACCESS_KEY, 'true');
-    sessionStorage.setItem(SESSION_ROLE_KEY, role);
-    currentUser.role = role;
-
-    showToast("Access verified! Welcome.", 2000);
-    showApp();
-  } catch (e) {
-    err.textContent = "Connection error. Please try again.";
-  }
-}
+/* ─── ACCESS GATE SUBMISSION REMOVED ─── */
 
 /* ─── AUTHENTICATION FLOWS ─── */
 function switchTab(tab) {
@@ -892,13 +831,25 @@ async function doSignUp() {
   const email = document.getElementById('su-email').value.trim();
   const phone = document.getElementById('su-phone').value.trim();
   const pass = document.getElementById('su-pass').value;
+  const code = document.getElementById('su-code').value.trim();
   const err = document.getElementById('su-err');
   err.textContent = "";
 
-  if (!user || !email || !phone || !pass) {
+  if (!user || !email || !phone || !pass || !code) {
     err.textContent = "All fields are required.";
     return;
   }
+
+  let role = '';
+  if (code === 'admin@growthcircle') {
+    role = 'admin';
+  } else if (code === 'student@growthcircle') {
+    role = 'student';
+  } else {
+    err.textContent = "Invalid access code.";
+    return;
+  }
+
   if (pass.length < 6) {
     err.textContent = "Password must be at least 6 characters.";
     return;
@@ -911,7 +862,8 @@ async function doSignUp() {
     options: {
       data: {
         username: user,
-        phone: phone
+        phone: phone,
+        role: role
       }
     }
   });

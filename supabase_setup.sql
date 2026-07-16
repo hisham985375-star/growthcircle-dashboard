@@ -91,10 +91,13 @@ declare
 begin
   username_val := coalesce(new.raw_user_meta_data->>'username', 'user_' || substr(new.id::text, 1, 8));
   
-  role_val := case 
-    when new.email = 'admin@growthcircle.com' or username_val = 'Growthcircle' then 'admin'::text
-    else 'student'::text
-  end;
+  role_val := coalesce(
+    new.raw_user_meta_data->>'role',
+    case 
+      when new.email = 'admin@growthcircle.com' or username_val = 'Growthcircle' then 'admin'::text
+      else 'student'::text
+    end
+  );
 
   insert into public.profiles (id, username, phone, role)
   values (
