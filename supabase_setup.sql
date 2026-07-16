@@ -6,11 +6,13 @@
 -- 0. Migration / Constraint Fixes for Existing Tables
 do $$
 begin
+  -- Drop old check constraint first so we can update values without violating it
+  alter table public.profiles drop constraint if exists profiles_role_check;
+  
   -- Update role values from 'member' to 'student'
   update public.profiles set role = 'student' where role = 'member';
   
-  -- Drop old check constraint and add the new one
-  alter table public.profiles drop constraint if exists profiles_role_check;
+  -- Add the new check constraint and default
   alter table public.profiles add constraint profiles_role_check check (role in ('admin', 'student'));
   alter table public.profiles alter column role set default 'student';
 exception
