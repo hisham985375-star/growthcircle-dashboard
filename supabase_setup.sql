@@ -42,6 +42,18 @@ alter table public.records enable row level security;
 
 -- 5. Set up RLS Policies
 
+-- Drop existing policies to ensure idempotency
+drop policy if exists "Allow public read of profiles" on public.profiles;
+drop policy if exists "Allow users to update own profile" on public.profiles;
+
+drop policy if exists "Allow authenticated read of members" on public.members;
+drop policy if exists "Allow admin write of members" on public.members;
+drop policy if exists "Allow admin and owner write of members" on public.members;
+
+drop policy if exists "Allow authenticated read of records" on public.records;
+drop policy if exists "Allow admin write of records" on public.records;
+drop policy if exists "Allow admin and owner write of records" on public.records;
+
 -- Profiles Policies
 create policy "Allow public read of profiles" on public.profiles
   for select using (true);
