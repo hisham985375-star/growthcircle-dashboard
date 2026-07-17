@@ -572,9 +572,8 @@ canvas{display:block;}
   cursor: not-allowed;
   text-decoration: line-through;
 }
-}
 
-/* Desk Clock Calendar Layout */
+/* Desk Calendar Card Widget (PC layout) */
 .db-top-layout {
   display: flex;
   gap: 24px;
@@ -589,139 +588,104 @@ canvas{display:block;}
 }
 .desk-cal-widget-wrap {
   flex-shrink: 0;
-  width: 480px;
+  width: 280px;
 }
 
-/* Desk Calendar Styles */
-.desk-cal-container {
-  display: flex;
-  background: #000;
-  border-radius: 20px;
-  border: 1.5px solid var(--border);
-  height: 100%;
-  min-height: 220px;
-  padding: 16px;
+.ref-cal-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
   box-sizing: border-box;
-  gap: 16px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-}
-.desk-clock-side {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-right: 1px solid rgba(255,255,255,0.08);
-  padding-right: 16px;
-}
-.desk-clock-face {
-  position: relative;
-  width: 130px;
-  height: 130px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255,255,255,0.02);
-  border-radius: 28px;
-  border: 1px solid rgba(255,255,255,0.05);
-}
-.clock-ticks-svg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
+  box-shadow: var(--sc);
   height: 100%;
-}
-.desk-clock-time {
-  font-family: 'Outfit', 'Inter', sans-serif;
-  font-size: 28px;
-  font-weight: 800;
-  color: #fff;
-  letter-spacing: 0.5px;
-}
-.desk-cal-side {
-  width: 250px;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
-.desk-cal-header {
+.ref-cal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
-  padding: 0 4px;
+  margin-bottom: 16px;
 }
-.desk-cal-month-title {
+.ref-cal-title {
   font-family: var(--font-h);
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 800;
-  color: #ef4444;
-  letter-spacing: 1px;
-}
-.desk-cal-arrow {
-  background: none;
-  border: none;
-  color: var(--mute);
-  cursor: pointer;
-  font-size: 10px;
-  padding: 4px;
-  transition: color var(--ease);
-}
-.desk-cal-arrow:hover {
   color: #fff;
 }
-.desk-cal-weekdays {
+.ref-cal-nav {
+  display: flex;
+  gap: 12px;
+}
+.ref-cal-arrow {
+  background: none;
+  border: none;
+  color: #ff5a5f; /* Coral red navigation arrows */
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 2px 6px;
+  transition: opacity var(--ease);
+}
+.ref-cal-arrow:hover {
+  opacity: 0.8;
+}
+.ref-cal-weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   text-align: center;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
-.desk-cal-wk {
-  font-size: 10px;
-  font-weight: 700;
+.ref-cal-wk {
+  font-size: 10.5px;
+  font-weight: 600;
   color: var(--mute);
 }
-.desk-cal-grid {
+.ref-cal-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 5px 3px;
+  gap: 6px 3px;
   text-align: center;
 }
-.desk-cal-day {
+.ref-cal-day {
   aspect-ratio: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 600;
   border-radius: 50%;
   cursor: pointer;
   color: #fff;
   transition: all var(--ease);
 }
-.desk-cal-day:hover:not(.disabled):not(.muted) {
-  background: rgba(255,255,255,0.08);
+.ref-cal-day:hover:not(.disabled):not(.muted) {
+  background: rgba(255,255,255,0.06);
+  color: #ff5a5f;
 }
-.desk-cal-day.muted {
+.ref-cal-day.muted {
   color: var(--mute);
   opacity: 0.15;
   cursor: default;
 }
-.desk-cal-day.selected {
-  background: #ef4444 !important;
+.ref-cal-day.selected {
+  background: #ff5a5f !important; /* Coral red circular selection badge */
   color: #fff !important;
   font-weight: 700;
-  box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+  box-shadow: 0 4px 10px rgba(255, 90, 95, 0.35);
 }
-.desk-cal-day.today {
-  border: 1px solid rgba(239, 68, 68, 0.4);
+.ref-cal-day.today {
+  border: 1px solid rgba(255, 90, 95, 0.4);
 }
-.desk-cal-day.today.selected {
+.ref-cal-day.today.selected {
   border-color: transparent;
 }
-.desk-cal-day.future {
+.ref-cal-day.future {
   color: var(--mute);
 }
-.desk-cal-day.disabled {
+.ref-cal-day.disabled {
   opacity: 0.2;
   cursor: not-allowed;
   text-decoration: line-through;
@@ -1088,7 +1052,6 @@ function showApp() {
     adminNav.classList.add('hidden');
   }
 
-  startDeskClock();
   // Load backend database items
   dbReady = false;
   loadData();
@@ -2348,10 +2311,10 @@ function selectPickerDate(dateStr) {
   renderPage();
 }
 
-/* ─── DESK CLOCK CALENDAR WIDGET ─── */
+/* ─── DESK CALENDAR CARD WIDGET ─── */
 function makeDeskCalendar() {
-  const monthNames = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
-  const weekdays = ["S", "M", "T", "W", "T", "F", "S"];
+  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const weekdays = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
   
   if (window.deskYear === undefined) {
     window.deskYear = parseInt(currentDate.split('-')[0]);
@@ -2359,37 +2322,31 @@ function makeDeskCalendar() {
   }
   
   const firstDay = new Date(window.deskYear, window.deskMonth, 1);
-  const startDay = firstDay.getDay(); 
+  let startDay = firstDay.getDay(); 
+  startDay = startDay === 0 ? 6 : startDay - 1;
   
   const totalDays = new Date(window.deskYear, window.deskMonth + 1, 0).getDate();
   const prevTotalDays = new Date(window.deskYear, window.deskMonth, 0).getDate();
   
   let html = `
-  <div class="desk-cal-container">
-    <div class="desk-clock-side">
-      <div class="desk-clock-face">
-        <svg class="clock-ticks-svg" viewBox="0 0 160 160">
-          <rect x="10" y="10" width="140" height="140" rx="30" ry="30" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" stroke-dasharray="2 6"/>
-        </svg>
-        <div class="desk-clock-time" id="desk-clock-time">00:00</div>
+  <div class="ref-cal-card">
+    <div class="ref-cal-header">
+      <span class="ref-cal-title">${monthNames[window.deskMonth]} ${window.deskYear}</span>
+      <div class="ref-cal-nav">
+        <button class="ref-cal-arrow" onclick="navDeskMonth(-1); event.stopPropagation();">←</button>
+        <button class="ref-cal-arrow" onclick="navDeskMonth(1); event.stopPropagation();">→</button>
       </div>
     </div>
-    <div class="desk-cal-side">
-      <div class="desk-cal-header">
-        <button class="desk-cal-arrow" onclick="navDeskMonth(-1); event.stopPropagation();">◀</button>
-        <span class="desk-cal-month-title">${monthNames[window.deskMonth]}</span>
-        <button class="desk-cal-arrow" onclick="navDeskMonth(1); event.stopPropagation();">▶</button>
-      </div>
-      <div class="desk-cal-weekdays">`;
+    <div class="ref-cal-weekdays">`;
       
   weekdays.forEach(w => {
-    html += `<div class="desk-cal-wk">${w}</div>`;
+    html += `<div class="ref-cal-wk">${w}</div>`;
   });
-  html += `</div><div class="desk-cal-grid">`;
+  html += `</div><div class="ref-cal-grid">`;
   
   for (let i = startDay - 1; i >= 0; i--) {
     const dVal = prevTotalDays - i;
-    html += `<div class="desk-cal-day muted">${dVal}</div>`;
+    html += `<div class="ref-cal-day muted">${dVal}</div>`;
   }
   
   const todayStr = today();
@@ -2405,7 +2362,7 @@ function makeDeskCalendar() {
     const isAdmin = currentUser && currentUser.role === 'admin';
     const canSelect = isAdmin || !isFuture;
     
-    html += `<div class="desk-cal-day ${isSelected ? 'selected' : ''} ${isToday ? 'today' : ''} ${isFuture ? 'future' : ''} ${!canSelect ? 'disabled' : ''}"
+    html += `<div class="ref-cal-day ${isSelected ? 'selected' : ''} ${isToday ? 'today' : ''} ${isFuture ? 'future' : ''} ${!canSelect ? 'disabled' : ''}"
                   ${canSelect ? `onclick="selectDeskDate('${dateStr}')"` : ''}>
       ${d}
     </div>`;
@@ -2414,10 +2371,10 @@ function makeDeskCalendar() {
   const totalRendered = startDay + totalDays;
   const remaining = totalRendered % 7 === 0 ? 0 : 7 - (totalRendered % 7);
   for (let d = 1; d <= remaining; d++) {
-    html += `<div class="desk-cal-day muted">${d}</div>`;
+    html += `<div class="ref-cal-day muted">${d}</div>`;
   }
   
-  html += `</div></div></div>`;
+  html += `</div></div>`;
   return html;
 }
 
@@ -2438,19 +2395,6 @@ function selectDeskDate(dateStr) {
   window.deskYear = parseInt(dateStr.split('-')[0]);
   window.deskMonth = parseInt(dateStr.split('-')[1]) - 1;
   renderPage();
-}
-
-function startDeskClock() {
-  const update = () => {
-    const el = document.getElementById('desk-clock-time');
-    if (!el) return;
-    const now = new Date();
-    const hh = String(now.getHours()).padStart(2, '0');
-    const mm = String(now.getMinutes()).padStart(2, '0');
-    el.textContent = `${hh}:${mm}`;
-  };
-  update();
-  setInterval(update, 1000);
 }
 </script>
 </body>
