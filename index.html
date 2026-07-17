@@ -421,7 +421,16 @@ canvas{display:block;}
   .ctrl-bar{gap:8px;}
   #date-picker-btn{width:100%;order:2;justify-content:center;}
   .search-wrap{order:1;min-width:100%;}
-  .view-toggle{order:3;}
+  .view-toggle {
+    width: 100%;
+    order: 3;
+    display: flex;
+  }
+  .view-toggle .view-btn {
+    flex: 1;
+    justify-content: center;
+    text-align: center;
+  }
   .btn-primary{order:4;width:100%;justify-content:center;}
   
   /* Compact Table for Mobile */
