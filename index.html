@@ -278,50 +278,25 @@ tr:hover .action-btns{opacity:1;}
   color: transparent;
   font-size: 14px;
 }
-.habit-checkbox:hover {
-  transform: scale(1.05);
+.habit-checkbox:not(.disabled):hover {
+  transform: scale(1.08);
+  border-color: #10b981;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.25);
 }
 .habit-checkbox.checked {
-  color: #fff;
+  background: #10b981 !important;
+  border-color: #10b981 !important;
+  color: #fff !important;
+  opacity: 1 !important;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.3) !important;
 }
 .habit-checkbox.disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  border-color: rgba(255, 255, 255, 0.1)!important;
-  background: transparent!important;
+  cursor: default;
+  border-color: rgba(255, 255, 255, 0.08);
 }
 .habit-checkbox.disabled:hover {
   transform: none;
 }
-
-/* Color Accents for Checkboxes */
-.habit-checkbox.cb-blue { border-color: rgba(59, 130, 246, 0.35); }
-.habit-checkbox.cb-blue:hover { border-color: #3b82f6; }
-.habit-checkbox.cb-blue.checked { background: #3b82f6; border-color: #3b82f6; box-shadow: 0 0 10px rgba(59, 130, 246, 0.3); }
-
-.habit-checkbox.cb-orange { border-color: rgba(249, 115, 22, 0.35); }
-.habit-checkbox.cb-orange:hover { border-color: #f97316; }
-.habit-checkbox.cb-orange.checked { background: #f97316; border-color: #f97316; box-shadow: 0 0 10px rgba(249, 115, 22, 0.3); }
-
-.habit-checkbox.cb-pink { border-color: rgba(236, 72, 153, 0.35); }
-.habit-checkbox.cb-pink:hover { border-color: #ec4899; }
-.habit-checkbox.cb-pink.checked { background: #ec4899; border-color: #ec4899; box-shadow: 0 0 10px rgba(236, 72, 153, 0.3); }
-
-.habit-checkbox.cb-green { border-color: rgba(16, 185, 129, 0.35); }
-.habit-checkbox.cb-green:hover { border-color: #10b981; }
-.habit-checkbox.cb-green.checked { background: #10b981; border-color: #10b981; box-shadow: 0 0 10px rgba(16, 185, 129, 0.3); }
-
-.habit-checkbox.cb-sky { border-color: rgba(6, 182, 212, 0.35); }
-.habit-checkbox.cb-sky:hover { border-color: #06b6d4; }
-.habit-checkbox.cb-sky.checked { background: #06b6d4; border-color: #06b6d4; box-shadow: 0 0 10px rgba(6, 182, 212, 0.3); }
-
-.habit-checkbox.cb-purple { border-color: rgba(139, 92, 246, 0.35); }
-.habit-checkbox.cb-purple:hover { border-color: #8b5cf6; }
-.habit-checkbox.cb-purple.checked { background: #8b5cf6; border-color: #8b5cf6; box-shadow: 0 0 10px rgba(139, 92, 246, 0.3); }
-
-.habit-checkbox.cb-indigo { border-color: rgba(99, 102, 241, 0.35); }
-.habit-checkbox.cb-indigo:hover { border-color: #6366f1; }
-.habit-checkbox.cb-indigo.checked { background: #6366f1; border-color: #6366f1; box-shadow: 0 0 10px rgba(99, 102, 241, 0.3); }
 .pct-sub{font-size:10px;color:var(--mute);margin-top:2px;display:block;}
 
 /* ─── MODAL ─── */
