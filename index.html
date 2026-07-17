@@ -1699,7 +1699,7 @@ async function toggleHabit(mid, date, field, newValue) {
     await saveRec(mid, date, updateData);
     showToast("✅ Habit updated!");
   } catch (e) {
-    showToast("⚠️ Failed to update habit.");
+    showToast("⚠️ Failed to update habit: " + (e.message || e));
   }
 }
 
