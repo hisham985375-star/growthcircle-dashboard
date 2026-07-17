@@ -623,13 +623,23 @@ canvas{display:block;}
 
 /* Scroll support for mobile landscape viewports */
 @media (max-width: 935px) and (orientation: landscape) {
+  html, body {
+    overflow: auto !important;
+    height: auto !important;
+  }
   #app-screen {
     height: auto !important;
-    overflow: auto !important;
+    overflow: visible !important;
+    display: flex;
+    flex-direction: row;
   }
   .main-wrap {
     height: auto !important;
     overflow: visible !important;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
   }
   .main-area {
     height: auto !important;
