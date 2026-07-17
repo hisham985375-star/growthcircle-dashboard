@@ -1330,7 +1330,7 @@ function renderDashboard(container) {
   <div class="ctrl-bar">
     <div class="search-wrap"><span class="search-icon">🔍</span>
       <input type="text" id="search-inp" placeholder="Search members…" value="${esc(searchQ)}"
-        oninput="searchQ=this.value;renderDashboard(document.getElementById('main-area'))"/>
+        oninput="handleSearchInput(this.value)"/>
     </div>
     <div class="date-picker-container">
       <button class="date-selector-btn" id="date-picker-btn" onclick="toggleCalendarDropdown(event)">
@@ -1346,16 +1346,21 @@ function renderDashboard(container) {
     </div>
     ${isAdmin ? `<button class="btn btn-primary" onclick="showAddMember()">＋ Add Member</button>` : ''}
   </div>
-  <div class="card-grid">
-    <div class="stat-card"><div class="stat-label">Members</div><div class="stat-val">${DB.members.length}</div><div class="stat-sub">Total</div></div>
-    <div class="stat-card"><div class="stat-label">Active Today</div><div class="stat-val">${activeToday}</div><div class="stat-sub">Have entries</div></div>
-    <div class="stat-card"><div class="stat-label">Avg Score</div><div class="stat-val">${avg}</div><div class="stat-sub">Out of 7</div></div>
-    <div class="stat-card"><div class="stat-label">Date</div><div class="stat-val" style="font-size:16px">${dateLabel}</div><div class="stat-sub">Selected</div></div>
-  </div>`;
+  <div id="db-stats-area">
+    <div class="card-grid">
+      <div class="stat-card"><div class="stat-label">Members</div><div class="stat-val">${DB.members.length}</div><div class="stat-sub">Total</div></div>
+      <div class="stat-card"><div class="stat-label">Active Today</div><div class="stat-val">${activeToday}</div><div class="stat-sub">Have entries</div></div>
+      <div class="stat-card"><div class="stat-label">Avg Score</div><div class="stat-val">${avg}</div><div class="stat-sub">Out of 7</div></div>
+      <div class="stat-card"><div class="stat-label">Date</div><div class="stat-val" style="font-size:16px">${dateLabel}</div><div class="stat-sub">Selected</div></div>
+    </div>
+  </div>
+  <div id="db-table-area">`;
 
   if (currentView === 'daily') html += renderDailyTable(isAdmin);
   else if (currentView === 'weekly') html += renderWeeklyTable();
   else html += renderMonthlyTable();
+
+  html += `</div>`;
 
   // Save cursor position and focus state for inputs
   const activeId = document.activeElement ? document.activeElement.id : null;
@@ -1378,6 +1383,44 @@ function renderDashboard(container) {
         } catch (e) {}
       }
     }
+  }
+}
+
+function handleSearchInput(val) {
+  searchQ = val;
+  const isAdmin = currentUser.role === 'admin';
+  let activeToday = 0, totalScore = 0;
+
+  DB.members.forEach(m => {
+    const r = getRec(m.id, currentDate);
+    const t = dailyTotal(r);
+    totalScore += t;
+    if (t > 0) activeToday++;
+  });
+
+  const avg = DB.members.length ? Math.round(totalScore / DB.members.length * 10) / 10 : 0;
+  const dateLabel = new Date(currentDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+  // Update stats cards directly
+  const statsArea = document.getElementById('db-stats-area');
+  if (statsArea) {
+    statsArea.innerHTML = `
+    <div class="card-grid">
+      <div class="stat-card"><div class="stat-label">Members</div><div class="stat-val">${DB.members.length}</div><div class="stat-sub">Total</div></div>
+      <div class="stat-card"><div class="stat-label">Active Today</div><div class="stat-val">${activeToday}</div><div class="stat-sub">Have entries</div></div>
+      <div class="stat-card"><div class="stat-label">Avg Score</div><div class="stat-val">${avg}</div><div class="stat-sub">Out of 7</div></div>
+      <div class="stat-card"><div class="stat-label">Date</div><div class="stat-val" style="font-size:16px">${dateLabel}</div><div class="stat-sub">Selected</div></div>
+    </div>`;
+  }
+
+  // Update table directly
+  const tableArea = document.getElementById('db-table-area');
+  if (tableArea) {
+    let tblHtml = '';
+    if (currentView === 'daily') tblHtml = renderDailyTable(isAdmin);
+    else if (currentView === 'weekly') tblHtml = renderWeeklyTable();
+    else tblHtml = renderMonthlyTable();
+    tableArea.innerHTML = tblHtml;
   }
 }
 
