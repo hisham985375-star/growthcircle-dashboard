@@ -841,6 +841,13 @@ async function loadData() {
 
 /* ─── DATA PERSISTENCE ─── */
 async function saveRec(mid, date, data) {
+  // Prevent students from editing future dates
+  const isFuture = date > today();
+  const isAdmin = currentUser && currentUser.role === 'admin';
+  if (isFuture && !isAdmin) {
+    throw new Error("You cannot complete habits for future dates.");
+  }
+
   const key = recKey(mid, date);
   const existing = DB.records[key] || {
     sleptAt1030: false,
@@ -1249,7 +1256,8 @@ function renderDailyTable(isAdmin) {
     const pct = Math.round((tot / 7) * 100);
     
     const isOwnRow = (currentUser && m.id === currentUser.uid) || (m.name.toLowerCase() === loggedInUsername);
-    const canEdit = isAdmin || isOwnRow;
+    const isFuture = currentDate > today();
+    const canEdit = isAdmin || (isOwnRow && !isFuture);
 
     const displayName = getMemberName(m);
     h += `<tr>
