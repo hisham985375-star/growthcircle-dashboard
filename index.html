@@ -449,177 +449,65 @@ canvas{display:block;}
   .profile-grid{grid-template-columns:1fr;}
   .live-chip .live-text{display:none;}
   
-  .db-top-layout {
-    flex-direction: column;
-    gap: 12px;
-  }
-  .desk-cal-widget-wrap {
-    display: none !important;
-  }
   #date-picker-btn {
-    display: flex !important;
+    width: 100% !important;
+    order: 2;
+    justify-content: space-between;
   }
 }
 
-/* Custom Calendar Picker CSS */
+/* Custom Date Selector Button */
+.date-selector-btn {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  color: #fff;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-family: var(--font-g);
+  font-size: 13.5px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all var(--ease);
+}
+.date-selector-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--accent);
+}
+.date-selector-btn .icon {
+  color: var(--mute);
+  font-size: 14px;
+}
+
+/* Modal Calendar Picker CSS (re-designed according to reference image) */
 .cal-picker-wrap {
-  padding: 8px;
-  background: #0e1322;
+  padding: 16px;
+  background: var(--card);
   color: #fff;
   font-family: var(--font-g);
+  border-radius: 16px;
+  width: 280px;
+  box-sizing: border-box;
 }
 .cal-picker-hd {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  padding: 0 4px;
-}
-.cal-nav-btn {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid var(--border);
-  color: var(--sub);
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  transition: all var(--ease);
-}
-.cal-nav-btn:hover {
-  background: var(--accent-l);
-  color: #fff;
-  border-color: var(--accent);
-}
-.cal-picker-title {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
-.cal-month {
-  font-family: var(--font-h);
-  font-size: 22px;
-  font-weight: 800;
-  color: #fff;
-}
-.cal-year {
-  font-size: 14px;
-  color: var(--mute);
-  font-weight: 500;
-}
-.cal-weekdays {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  text-align: center;
-  margin-bottom: 12px;
-}
-.cal-wk-label {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--mute);
-  text-transform: uppercase;
-  letter-spacing: .5px;
-}
-.cal-days-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 8px 4px;
-  text-align: center;
-}
-.cal-day {
-  aspect-ratio: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13.5px;
-  font-weight: 600;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: all var(--ease);
-  color: #fff;
-  border: 1px solid transparent;
-}
-.cal-day:hover:not(.disabled):not(.muted-day) {
-  background: rgba(255,255,255,0.05);
-  color: var(--accent);
-}
-.cal-day.muted-day {
-  color: var(--mute);
-  opacity: 0.25;
-  cursor: default;
-}
-.cal-day.selected {
-  background: var(--accent) !important;
-  color: #fff !important;
-  font-weight: 700;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
-}
-.cal-day.today {
-  border-color: rgba(99, 102, 241, 0.4);
-  color: var(--accent);
-}
-.cal-day.today.selected {
-  color: #fff;
-}
-.cal-day.future {
-  color: var(--mute);
-}
-.cal-day.disabled {
-  opacity: 0.2;
-  cursor: not-allowed;
-  text-decoration: line-through;
-}
-
-/* Desk Calendar Card Widget (PC layout) */
-.db-top-layout {
-  display: flex;
-  gap: 24px;
-  margin-bottom: 24px;
-  align-items: stretch;
-}
-.db-left-section {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-.desk-cal-widget-wrap {
-  flex-shrink: 0;
-  width: 280px;
-}
-
-.ref-cal-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 20px;
-  box-sizing: border-box;
-  box-shadow: var(--sc);
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.ref-cal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: 16px;
 }
-.ref-cal-title {
+.cal-picker-title {
   font-family: var(--font-h);
   font-size: 15px;
   font-weight: 800;
   color: #fff;
 }
-.ref-cal-nav {
+.cal-picker-nav {
   display: flex;
   gap: 12px;
 }
-.ref-cal-arrow {
+.cal-nav-btn {
   background: none;
   border: none;
   color: #ff5a5f; /* Coral red navigation arrows */
@@ -629,27 +517,27 @@ canvas{display:block;}
   padding: 2px 6px;
   transition: opacity var(--ease);
 }
-.ref-cal-arrow:hover {
+.cal-nav-btn:hover {
   opacity: 0.8;
 }
-.ref-cal-weekdays {
+.cal-weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   text-align: center;
   margin-bottom: 10px;
 }
-.ref-cal-wk {
+.cal-wk-label {
   font-size: 10.5px;
   font-weight: 600;
   color: var(--mute);
 }
-.ref-cal-grid {
+.cal-days-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 6px 3px;
   text-align: center;
 }
-.ref-cal-day {
+.cal-day {
   aspect-ratio: 1;
   display: inline-flex;
   align-items: center;
@@ -660,39 +548,36 @@ canvas{display:block;}
   cursor: pointer;
   color: #fff;
   transition: all var(--ease);
+  border: 1px solid transparent;
 }
-.ref-cal-day:hover:not(.disabled):not(.muted) {
+.cal-day:hover:not(.disabled):not(.muted-day) {
   background: rgba(255,255,255,0.06);
   color: #ff5a5f;
 }
-.ref-cal-day.muted {
+.cal-day.muted-day {
   color: var(--mute);
   opacity: 0.15;
   cursor: default;
 }
-.ref-cal-day.selected {
+.cal-day.selected {
   background: #ff5a5f !important; /* Coral red circular selection badge */
   color: #fff !important;
   font-weight: 700;
   box-shadow: 0 4px 10px rgba(255, 90, 95, 0.35);
 }
-.ref-cal-day.today {
+.cal-day.today {
   border: 1px solid rgba(255, 90, 95, 0.4);
 }
-.ref-cal-day.today.selected {
+.cal-day.today.selected {
   border-color: transparent;
 }
-.ref-cal-day.future {
+.cal-day.future {
   color: var(--mute);
 }
-.ref-cal-day.disabled {
+.cal-day.disabled {
   opacity: 0.2;
   cursor: not-allowed;
   text-decoration: line-through;
-}
-
-#date-picker-btn {
-  display: none !important;
 }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -1396,37 +1281,32 @@ function renderDashboard(container) {
 
   const avg = DB.members.length ? Math.round(totalScore / DB.members.length * 10) / 10 : 0;
   const dateLabel = new Date(currentDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  
+  const [y, m, d] = currentDate.split('-');
+  const formattedDate = `${d}-${m}-${y}`;
 
   let html = `
-  <div class="db-top-layout">
-    <div class="db-left-section">
-      <div class="ctrl-bar">
-        <div class="search-wrap"><span class="search-icon">🔍</span>
-          <input type="text" id="search-inp" placeholder="Search members…" value="${esc(searchQ)}"
-            oninput="searchQ=this.value;renderDashboard(document.getElementById('main-area'))"/>
-        </div>
-        <button class="btn btn-ghost" id="date-picker-btn" onclick="openCalendarPicker()">
-          📅 ${dateLabel}
-        </button>
-        <div class="view-toggle">
-          <button class="view-btn ${currentView === 'daily' ? 'active' : ''}" onclick="currentView='daily';renderDashboard(document.getElementById('main-area'))">Daily</button>
-          <button class="view-btn ${currentView === 'weekly' ? 'active' : ''}" onclick="currentView='weekly';renderDashboard(document.getElementById('main-area'))">Weekly</button>
-          <button class="view-btn ${currentView === 'monthly' ? 'active' : ''}" onclick="currentView='monthly';renderDashboard(document.getElementById('main-area'))">Monthly</button>
-        </div>
-        ${isAdmin ? `<button class="btn btn-primary" onclick="showAddMember()">＋ Add Member</button>` : ''}
-      </div>
-      <div class="card-grid">
-        <div class="stat-card"><div class="stat-label">Members</div><div class="stat-val">${DB.members.length}</div><div class="stat-sub">Total</div></div>
-        <div class="stat-card"><div class="stat-label">Active Today</div><div class="stat-val">${activeToday}</div><div class="stat-sub">Have entries</div></div>
-        <div class="stat-card"><div class="stat-label">Avg Score</div><div class="stat-val">${avg}</div><div class="stat-sub">Out of 7</div></div>
-        <div class="stat-card"><div class="stat-label">Date</div><div class="stat-val" style="font-size:16px">${dateLabel}</div><div class="stat-sub">Selected</div></div>
-      </div>
+  <div class="ctrl-bar">
+    <div class="search-wrap"><span class="search-icon">🔍</span>
+      <input type="text" id="search-inp" placeholder="Search members…" value="${esc(searchQ)}"
+        oninput="searchQ=this.value;renderDashboard(document.getElementById('main-area'))"/>
     </div>
-    
-    <!-- Desk Clock Calendar Widget (visible on PC, hidden on mobile) -->
-    <div class="desk-cal-widget-wrap">
-      ${makeDeskCalendar()}
+    <button class="date-selector-btn" id="date-picker-btn" onclick="openCalendarPicker()">
+      <span>${formattedDate}</span>
+      <span class="icon">📅</span>
+    </button>
+    <div class="view-toggle">
+      <button class="view-btn ${currentView === 'daily' ? 'active' : ''}" onclick="currentView='daily';renderDashboard(document.getElementById('main-area'))">Daily</button>
+      <button class="view-btn ${currentView === 'weekly' ? 'active' : ''}" onclick="currentView='weekly';renderDashboard(document.getElementById('main-area'))">Weekly</button>
+      <button class="view-btn ${currentView === 'monthly' ? 'active' : ''}" onclick="currentView='monthly';renderDashboard(document.getElementById('main-area'))">Monthly</button>
     </div>
+    ${isAdmin ? `<button class="btn btn-primary" onclick="showAddMember()">＋ Add Member</button>` : ''}
+  </div>
+  <div class="card-grid">
+    <div class="stat-card"><div class="stat-label">Members</div><div class="stat-val">${DB.members.length}</div><div class="stat-sub">Total</div></div>
+    <div class="stat-card"><div class="stat-label">Active Today</div><div class="stat-val">${activeToday}</div><div class="stat-sub">Have entries</div></div>
+    <div class="stat-card"><div class="stat-label">Avg Score</div><div class="stat-val">${avg}</div><div class="stat-sub">Out of 7</div></div>
+    <div class="stat-card"><div class="stat-label">Date</div><div class="stat-val" style="font-size:16px">${dateLabel}</div><div class="stat-sub">Selected</div></div>
   </div>`;
 
   if (currentView === 'daily') html += renderDailyTable(isAdmin);
@@ -2308,92 +2188,6 @@ function navPickerMonth(dir) {
 function selectPickerDate(dateStr) {
   currentDate = dateStr;
   closeModal();
-  renderPage();
-}
-
-/* ─── DESK CALENDAR CARD WIDGET ─── */
-function makeDeskCalendar() {
-  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-  const weekdays = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
-  
-  if (window.deskYear === undefined) {
-    window.deskYear = parseInt(currentDate.split('-')[0]);
-    window.deskMonth = parseInt(currentDate.split('-')[1]) - 1;
-  }
-  
-  const firstDay = new Date(window.deskYear, window.deskMonth, 1);
-  let startDay = firstDay.getDay(); 
-  startDay = startDay === 0 ? 6 : startDay - 1;
-  
-  const totalDays = new Date(window.deskYear, window.deskMonth + 1, 0).getDate();
-  const prevTotalDays = new Date(window.deskYear, window.deskMonth, 0).getDate();
-  
-  let html = `
-  <div class="ref-cal-card">
-    <div class="ref-cal-header">
-      <span class="ref-cal-title">${monthNames[window.deskMonth]} ${window.deskYear}</span>
-      <div class="ref-cal-nav">
-        <button class="ref-cal-arrow" onclick="navDeskMonth(-1); event.stopPropagation();">←</button>
-        <button class="ref-cal-arrow" onclick="navDeskMonth(1); event.stopPropagation();">→</button>
-      </div>
-    </div>
-    <div class="ref-cal-weekdays">`;
-      
-  weekdays.forEach(w => {
-    html += `<div class="ref-cal-wk">${w}</div>`;
-  });
-  html += `</div><div class="ref-cal-grid">`;
-  
-  for (let i = startDay - 1; i >= 0; i--) {
-    const dVal = prevTotalDays - i;
-    html += `<div class="ref-cal-day muted">${dVal}</div>`;
-  }
-  
-  const todayStr = today();
-  const [tY, tM, tD] = todayStr.split('-').map(Number);
-  const [cY, cM, cD] = currentDate.split('-').map(Number);
-  
-  for (let d = 1; d <= totalDays; d++) {
-    const dateStr = `${window.deskYear}-${String(window.deskMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-    const isSelected = window.deskYear === cY && (window.deskMonth + 1) === cM && d === cD;
-    const isToday = window.deskYear === tY && (window.deskMonth + 1) === tM && d === tD;
-    const isFuture = dateStr > todayStr;
-    
-    const isAdmin = currentUser && currentUser.role === 'admin';
-    const canSelect = isAdmin || !isFuture;
-    
-    html += `<div class="ref-cal-day ${isSelected ? 'selected' : ''} ${isToday ? 'today' : ''} ${isFuture ? 'future' : ''} ${!canSelect ? 'disabled' : ''}"
-                  ${canSelect ? `onclick="selectDeskDate('${dateStr}')"` : ''}>
-      ${d}
-    </div>`;
-  }
-  
-  const totalRendered = startDay + totalDays;
-  const remaining = totalRendered % 7 === 0 ? 0 : 7 - (totalRendered % 7);
-  for (let d = 1; d <= remaining; d++) {
-    html += `<div class="ref-cal-day muted">${d}</div>`;
-  }
-  
-  html += `</div></div>`;
-  return html;
-}
-
-function navDeskMonth(dir) {
-  window.deskMonth += dir;
-  if (window.deskMonth < 0) {
-    window.deskMonth = 11;
-    window.deskYear--;
-  } else if (window.deskMonth > 11) {
-    window.deskMonth = 0;
-    window.deskYear++;
-  }
-  renderPage();
-}
-
-function selectDeskDate(dateStr) {
-  currentDate = dateStr;
-  window.deskYear = parseInt(dateStr.split('-')[0]);
-  window.deskMonth = parseInt(dateStr.split('-')[1]) - 1;
   renderPage();
 }
 </script>
