@@ -1357,7 +1357,28 @@ function renderDashboard(container) {
   else if (currentView === 'weekly') html += renderWeeklyTable();
   else html += renderMonthlyTable();
 
+  // Save cursor position and focus state for inputs
+  const activeId = document.activeElement ? document.activeElement.id : null;
+  let cursorStart = null, cursorEnd = null;
+  if (activeId && document.activeElement.tagName === 'INPUT') {
+    cursorStart = document.activeElement.selectionStart;
+    cursorEnd = document.activeElement.selectionEnd;
+  }
+
   container.innerHTML = html;
+
+  // Restore focus and cursor position
+  if (activeId) {
+    const el = document.getElementById(activeId);
+    if (el) {
+      el.focus();
+      if (cursorStart !== null && cursorEnd !== null) {
+        try {
+          el.setSelectionRange(cursorStart, cursorEnd);
+        } catch (e) {}
+      }
+    }
+  }
 }
 
 function filtered() {
