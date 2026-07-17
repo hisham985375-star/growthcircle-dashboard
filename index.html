@@ -620,6 +620,30 @@ canvas{display:block;}
   cursor: not-allowed;
   text-decoration: line-through;
 }
+
+/* Scroll support for mobile landscape viewports */
+@media (max-width: 935px) and (orientation: landscape) {
+  #app-screen {
+    height: auto !important;
+    overflow: auto !important;
+  }
+  .main-wrap {
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .main-area {
+    height: auto !important;
+    overflow: visible !important;
+    padding: 12px !important;
+  }
+  .table-wrap {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  table {
+    min-width: 850px !important;
+  }
+}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 </head>
