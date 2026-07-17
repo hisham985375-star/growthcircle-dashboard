@@ -449,9 +449,12 @@ canvas{display:block;}
   .profile-grid{grid-template-columns:1fr;}
   .live-chip .live-text{display:none;}
   
+  .date-picker-container {
+    width: 100%;
+    order: 2;
+  }
   #date-picker-btn {
     width: 100% !important;
-    order: 2;
     justify-content: space-between;
   }
 }
@@ -481,10 +484,33 @@ canvas{display:block;}
   font-size: 14px;
 }
 
-/* Modal Calendar Picker CSS (re-designed according to reference image) */
+/* Date Picker Container */
+.date-picker-container {
+  position: relative;
+  display: inline-block;
+}
+
+/* Floating Dropdown Calendar */
+.cal-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 999;
+  display: none;
+  background: #181d2a; /* Dark card color matching reference image */
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  box-sizing: border-box;
+}
+.cal-dropdown.show {
+  display: block;
+}
+
+/* Custom Calendar Picker CSS (re-designed according to reference image) */
 .cal-picker-wrap {
   padding: 16px;
-  background: var(--card);
+  background: #181d2a;
   color: #fff;
   font-family: var(--font-g);
   border-radius: 16px;
@@ -496,29 +522,35 @@ canvas{display:block;}
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
+  padding: 0 4px;
 }
 .cal-picker-title {
   font-family: var(--font-h);
-  font-size: 15px;
+  font-size: 14.5px;
   font-weight: 800;
   color: #fff;
 }
 .cal-picker-nav {
   display: flex;
-  gap: 12px;
+  gap: 8px;
 }
 .cal-nav-btn {
   background: none;
-  border: none;
-  color: #ff5a5f; /* Coral red navigation arrows */
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
   cursor: pointer;
-  font-size: 16px;
-  font-weight: 700;
-  padding: 2px 6px;
-  transition: opacity var(--ease);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  transition: all var(--ease);
 }
 .cal-nav-btn:hover {
-  opacity: 0.8;
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.3);
 }
 .cal-weekdays {
   display: grid;
@@ -527,8 +559,8 @@ canvas{display:block;}
   margin-bottom: 10px;
 }
 .cal-wk-label {
-  font-size: 10.5px;
-  font-weight: 600;
+  font-size: 10px;
+  font-weight: 700;
   color: var(--mute);
 }
 .cal-days-grid {
@@ -542,7 +574,7 @@ canvas{display:block;}
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 600;
   border-radius: 50%;
   cursor: pointer;
@@ -552,7 +584,7 @@ canvas{display:block;}
 }
 .cal-day:hover:not(.disabled):not(.muted-day) {
   background: rgba(255,255,255,0.06);
-  color: #ff5a5f;
+  color: #7c3aed; /* Purple hover */
 }
 .cal-day.muted-day {
   color: var(--mute);
@@ -560,13 +592,13 @@ canvas{display:block;}
   cursor: default;
 }
 .cal-day.selected {
-  background: #ff5a5f !important; /* Coral red circular selection badge */
+  background: #7c3aed !important; /* Purple circular selection badge */
   color: #fff !important;
   font-weight: 700;
-  box-shadow: 0 4px 10px rgba(255, 90, 95, 0.35);
+  box-shadow: 0 4px 10px rgba(124, 58, 237, 0.4);
 }
 .cal-day.today {
-  border: 1px solid rgba(255, 90, 95, 0.4);
+  border: 1px solid rgba(124, 58, 237, 0.4);
 }
 .cal-day.today.selected {
   border-color: transparent;
@@ -1291,10 +1323,13 @@ function renderDashboard(container) {
       <input type="text" id="search-inp" placeholder="Search members…" value="${esc(searchQ)}"
         oninput="searchQ=this.value;renderDashboard(document.getElementById('main-area'))"/>
     </div>
-    <button class="date-selector-btn" id="date-picker-btn" onclick="openCalendarPicker()">
-      <span>${formattedDate}</span>
-      <span class="icon">📅</span>
-    </button>
+    <div class="date-picker-container">
+      <button class="date-selector-btn" id="date-picker-btn" onclick="toggleCalendarDropdown(event)">
+        <span>${formattedDate}</span>
+        <span class="icon">📅</span>
+      </button>
+      <div class="cal-dropdown" id="cal-dropdown"></div>
+    </div>
     <div class="view-toggle">
       <button class="view-btn ${currentView === 'daily' ? 'active' : ''}" onclick="currentView='daily';renderDashboard(document.getElementById('main-area'))">Daily</button>
       <button class="view-btn ${currentView === 'weekly' ? 'active' : ''}" onclick="currentView='weekly';renderDashboard(document.getElementById('main-area'))">Weekly</button>
@@ -2101,46 +2136,59 @@ function shakeCard() {
   c.classList.remove('shake'); void c.offsetWidth; c.classList.add('shake');
 }
 
-/* ─── CUSTOM CALENDAR SELECTOR ─── */
+/* ─── CUSTOM CALENDAR SELECTOR (DROPDOWN) ─── */
 let pickerYear = parseInt(today().split('-')[0]);
 let pickerMonth = parseInt(today().split('-')[1]) - 1;
 
-function openCalendarPicker() {
-  pickerYear = parseInt(currentDate.split('-')[0]);
-  pickerMonth = parseInt(currentDate.split('-')[1]) - 1;
-  renderCalendarModal();
+function toggleCalendarDropdown(event) {
+  if (event) event.stopPropagation();
+  const dropdown = document.getElementById('cal-dropdown');
+  if (!dropdown) return;
+  
+  if (dropdown.classList.contains('show')) {
+    closeCalendarDropdown();
+  } else {
+    pickerYear = parseInt(currentDate.split('-')[0]);
+    pickerMonth = parseInt(currentDate.split('-')[1]) - 1;
+    dropdown.classList.add('show');
+    renderDropdownCalendar();
+  }
 }
 
-function renderCalendarModal() {
+function closeCalendarDropdown() {
+  const dropdown = document.getElementById('cal-dropdown');
+  if (dropdown) dropdown.classList.remove('show');
+}
+
+function renderDropdownCalendar() {
+  const dropdown = document.getElementById('cal-dropdown');
+  if (!dropdown) return;
+  
   const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-  const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   
   const firstDay = new Date(pickerYear, pickerMonth, 1);
-  let startDay = firstDay.getDay(); 
-  startDay = startDay === 0 ? 6 : startDay - 1;
+  const startDay = firstDay.getDay(); // Sunday-first match
   
   const totalDays = new Date(pickerYear, pickerMonth + 1, 0).getDate();
   const prevTotalDays = new Date(pickerYear, pickerMonth, 0).getDate();
   
-  let body = `<div class="cal-picker-wrap">
+  let html = `<div class="cal-picker-wrap">
     <div class="cal-picker-hd">
-      <button class="cal-nav-btn" onclick="navPickerMonth(-1)">◀</button>
-      <div class="cal-picker-title">
-        <span class="cal-month">${monthNames[pickerMonth]}</span>
-        <span class="cal-year">${pickerYear}</span>
-      </div>
-      <button class="cal-nav-btn" onclick="navPickerMonth(1)">▶</button>
+      <button class="cal-nav-btn" onclick="navDropdownMonth(-1, event)">〈</button>
+      <span class="cal-picker-title">${monthNames[pickerMonth]} ${pickerYear}</span>
+      <button class="cal-nav-btn" onclick="navDropdownMonth(1, event)">〉</button>
     </div>
     <div class="cal-weekdays">`;
     
   weekdays.forEach(w => {
-    body += `<div class="cal-wk-label">${w}</div>`;
+    html += `<div class="cal-wk-label">${w}</div>`;
   });
-  body += `</div><div class="cal-days-grid">`;
+  html += `</div><div class="cal-days-grid">`;
   
   for (let i = startDay - 1; i >= 0; i--) {
     const dVal = prevTotalDays - i;
-    body += `<div class="cal-day muted-day">${dVal}</div>`;
+    html += `<div class="cal-day muted-day">${dVal}</div>`;
   }
   
   const todayStr = today();
@@ -2156,8 +2204,8 @@ function renderCalendarModal() {
     const isAdmin = currentUser && currentUser.role === 'admin';
     const canSelect = isAdmin || !isFuture;
     
-    body += `<div class="cal-day ${isSelected ? 'selected' : ''} ${isToday ? 'today' : ''} ${isFuture ? 'future' : ''} ${!canSelect ? 'disabled' : ''}" 
-                  ${canSelect ? `onclick="selectPickerDate('${dateStr}')"` : ''}>
+    html += `<div class="cal-day ${isSelected ? 'selected' : ''} ${isToday ? 'today' : ''} ${isFuture ? 'future' : ''} ${!canSelect ? 'disabled' : ''}" 
+                  ${canSelect ? `onclick="selectDropdownDate('${dateStr}', event)"` : ''}>
       ${d}
     </div>`;
   }
@@ -2165,15 +2213,15 @@ function renderCalendarModal() {
   const totalRendered = startDay + totalDays;
   const remaining = totalRendered % 7 === 0 ? 0 : 7 - (totalRendered % 7);
   for (let d = 1; d <= remaining; d++) {
-    body += `<div class="cal-day muted-day">${d}</div>`;
+    html += `<div class="cal-day muted-day">${d}</div>`;
   }
   
-  body += `</div></div>`;
-  
-  showModal(modalWrap('', body, '', true));
+  html += `</div></div>`;
+  dropdown.innerHTML = html;
 }
 
-function navPickerMonth(dir) {
+function navDropdownMonth(dir, event) {
+  if (event) event.stopPropagation();
   pickerMonth += dir;
   if (pickerMonth < 0) {
     pickerMonth = 11;
@@ -2182,14 +2230,23 @@ function navPickerMonth(dir) {
     pickerMonth = 0;
     pickerYear++;
   }
-  renderCalendarModal();
+  renderDropdownCalendar();
 }
 
-function selectPickerDate(dateStr) {
+function selectDropdownDate(dateStr, event) {
+  if (event) event.stopPropagation();
   currentDate = dateStr;
-  closeModal();
+  closeCalendarDropdown();
   renderPage();
 }
+
+// Global click outside listener
+document.addEventListener('click', (e) => {
+  const container = document.querySelector('.date-picker-container');
+  if (container && !container.contains(e.target)) {
+    closeCalendarDropdown();
+  }
+});
 </script>
 </body>
 </html>
