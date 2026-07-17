@@ -411,17 +411,38 @@ canvas{display:block;}
   .sidebar{position:fixed;left:0;top:0;height:100%;transform:translateX(-100%);box-shadow:4px 0 30px rgba(0,0,0,0.6);z-index:220;}
   .sidebar.open{transform:translateX(0);}
   .menu-btn{display:block;}
-  .main-area{padding:14px;}
+  .main-area{padding:12px; -webkit-overflow-scrolling: touch;}
   .topbar{padding:0 14px;}
-  .card-grid{grid-template-columns:1fr 1fr;gap:10px;}
-  .stat-val{font-size:22px;}
+  .card-grid{grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+  .stat-card{padding:12px;}
+  .stat-val{font-size:20px;}
+  .stat-label{font-size:9.5px;margin-bottom:4px;}
+  .stat-sub{font-size:10px;margin-top:2px;}
   .ctrl-bar{gap:8px;}
   .ctrl-bar input[type=date]{width:100%;order:2;}
   .search-wrap{order:1;min-width:100%;}
   .view-toggle{order:3;}
   .btn-primary{order:4;width:100%;justify-content:center;}
-  .table-wrap{border-radius:14px;}
-  table{min-width:640px;font-size:12px;}
+  
+  /* Compact Table for Mobile */
+  .table-wrap{border-radius:12px; overflow-x: auto; -webkit-overflow-scrolling: touch;}
+  table{min-width: 500px; font-size:11px;}
+  
+  th{padding: 8px 6px !important; vertical-align: middle !important;}
+  th:first-child{min-width: 105px !important; padding-left: 8px !important;}
+  td{padding: 8px 6px !important;}
+  td:first-child{padding-left: 8px !important;}
+  
+  .th-icon-circle{width: 20px; height: 20px; font-size: 11px; margin-bottom: 4px;}
+  .th-title{font-size: 7.5px; letter-spacing: 0;}
+  .th-sub{display: none !important;}
+  .th-line{height: 1.5px;}
+  
+  .member-name{font-size: 11.5px;}
+  .member-role{font-size: 9.5px;}
+  .avatar{width: 28px !important; height: 28px !important; font-size: 11px !important;}
+  .habit-checkbox {width: 22px; height: 22px; border-radius: 4px; font-size: 11px;}
+  
   .login-card{padding:32px 24px;}
   .login-logo{font-size:24px;}
   .access-card{padding:30px 20px;}
