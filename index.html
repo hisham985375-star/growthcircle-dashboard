@@ -268,7 +268,7 @@ tr:hover .action-btns{opacity:1;}
   width: 26px;
   height: 26px;
   border-radius: 6px;
-  border: 2px solid rgba(16, 185, 129, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.15);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -279,23 +279,49 @@ tr:hover .action-btns{opacity:1;}
   font-size: 14px;
 }
 .habit-checkbox:hover {
-  border-color: var(--green);
   transform: scale(1.05);
 }
 .habit-checkbox.checked {
-  background: var(--green);
-  border-color: var(--green);
   color: #fff;
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
 }
 .habit-checkbox.disabled {
   opacity: 0.4;
   cursor: not-allowed;
-  border-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.1)!important;
+  background: transparent!important;
 }
 .habit-checkbox.disabled:hover {
   transform: none;
 }
+
+/* Color Accents for Checkboxes */
+.habit-checkbox.cb-blue { border-color: rgba(59, 130, 246, 0.35); }
+.habit-checkbox.cb-blue:hover { border-color: #3b82f6; }
+.habit-checkbox.cb-blue.checked { background: #3b82f6; border-color: #3b82f6; box-shadow: 0 0 10px rgba(59, 130, 246, 0.3); }
+
+.habit-checkbox.cb-orange { border-color: rgba(249, 115, 22, 0.35); }
+.habit-checkbox.cb-orange:hover { border-color: #f97316; }
+.habit-checkbox.cb-orange.checked { background: #f97316; border-color: #f97316; box-shadow: 0 0 10px rgba(249, 115, 22, 0.3); }
+
+.habit-checkbox.cb-pink { border-color: rgba(236, 72, 153, 0.35); }
+.habit-checkbox.cb-pink:hover { border-color: #ec4899; }
+.habit-checkbox.cb-pink.checked { background: #ec4899; border-color: #ec4899; box-shadow: 0 0 10px rgba(236, 72, 153, 0.3); }
+
+.habit-checkbox.cb-green { border-color: rgba(16, 185, 129, 0.35); }
+.habit-checkbox.cb-green:hover { border-color: #10b981; }
+.habit-checkbox.cb-green.checked { background: #10b981; border-color: #10b981; box-shadow: 0 0 10px rgba(16, 185, 129, 0.3); }
+
+.habit-checkbox.cb-sky { border-color: rgba(6, 182, 212, 0.35); }
+.habit-checkbox.cb-sky:hover { border-color: #06b6d4; }
+.habit-checkbox.cb-sky.checked { background: #06b6d4; border-color: #06b6d4; box-shadow: 0 0 10px rgba(6, 182, 212, 0.3); }
+
+.habit-checkbox.cb-purple { border-color: rgba(139, 92, 246, 0.35); }
+.habit-checkbox.cb-purple:hover { border-color: #8b5cf6; }
+.habit-checkbox.cb-purple.checked { background: #8b5cf6; border-color: #8b5cf6; box-shadow: 0 0 10px rgba(139, 92, 246, 0.3); }
+
+.habit-checkbox.cb-indigo { border-color: rgba(99, 102, 241, 0.35); }
+.habit-checkbox.cb-indigo:hover { border-color: #6366f1; }
+.habit-checkbox.cb-indigo.checked { background: #6366f1; border-color: #6366f1; box-shadow: 0 0 10px rgba(99, 102, 241, 0.3); }
 .pct-sub{font-size:10px;color:var(--mute);margin-top:2px;display:block;}
 
 /* ─── MODAL ─── */
@@ -1164,26 +1190,34 @@ function renderDailyTable(isAdmin) {
           </div>
         </div>
       </th>
-      <th class="th-blue">
+      <th class="th-indigo">
         <div class="th-card">
           <div class="th-icon-circle">🌙</div>
-          <div class="th-title">Slept at 10:30 PM</div>
-          <div class="th-sub">Habit 1</div>
+          <div class="th-title">Night Review</div>
+          <div class="th-sub">Submitted</div>
+          <div class="th-line"></div>
+        </div>
+      </th>
+      <th class="th-blue">
+        <div class="th-card">
+          <div class="th-icon-circle">🛌</div>
+          <div class="th-title">Slept At</div>
+          <div class="th-sub">10:30 PM</div>
           <div class="th-line"></div>
         </div>
       </th>
       <th class="th-orange">
         <div class="th-card">
-          <div class="th-icon-circle">☀️</div>
-          <div class="th-title">Woke up at 5:00 AM</div>
-          <div class="th-sub">Habit 2</div>
+          <div class="th-icon-circle">🌅</div>
+          <div class="th-title">Woke Up</div>
+          <div class="th-sub">at 5:00 AM</div>
           <div class="th-line"></div>
         </div>
       </th>
       <th class="th-pink">
         <div class="th-card">
           <div class="th-icon-circle">📋</div>
-          <div class="th-title">Time-Blocked</div>
+          <div class="th-title">Time Blocked</div>
           <div class="th-sub">To-Do List Ready</div>
           <div class="th-line"></div>
         </div>
@@ -1192,7 +1226,15 @@ function renderDailyTable(isAdmin) {
         <div class="th-card">
           <div class="th-icon-circle">🐸</div>
           <div class="th-title">Ate the Frog</div>
-          <div class="th-sub">Hardest Task Done</div>
+          <div class="th-sub">(Hardest Task Done)</div>
+          <div class="th-line"></div>
+        </div>
+      </th>
+      <th class="th-purple">
+        <div class="th-card">
+          <div class="th-icon-circle">📈</div>
+          <div class="th-title">Screen Time Target Achieved</div>
+          <div class="th-sub">Target Achieved</div>
           <div class="th-line"></div>
         </div>
       </th>
@@ -1201,22 +1243,6 @@ function renderDailyTable(isAdmin) {
           <div class="th-icon-circle">📝</div>
           <div class="th-title">Physical Habit</div>
           <div class="th-sub">Tracker Ticked</div>
-          <div class="th-line"></div>
-        </div>
-      </th>
-      <th class="th-purple">
-        <div class="th-card">
-          <div class="th-icon-circle">📉</div>
-          <div class="th-title">Screen Time</div>
-          <div class="th-sub">Target Achieved</div>
-          <div class="th-line"></div>
-        </div>
-      </th>
-      <th class="th-indigo">
-        <div class="th-card">
-          <div class="th-icon-circle">🌙</div>
-          <div class="th-title">Night Review</div>
-          <div class="th-sub">Submitted</div>
           <div class="th-line"></div>
         </div>
       </th>
@@ -1254,13 +1280,13 @@ function renderDailyTable(isAdmin) {
         </div>` : ''}
       </div></td>
       
-      ${makeCheckboxCell(m.id, currentDate, 'sleptAt1030', r.sleptAt1030, canEdit)}
-      ${makeCheckboxCell(m.id, currentDate, 'wokeUp5', r.wokeUp5, canEdit)}
-      ${makeCheckboxCell(m.id, currentDate, 'timeBlocked', r.timeBlocked, canEdit)}
-      ${makeCheckboxCell(m.id, currentDate, 'ateFrog', r.ateFrog, canEdit)}
-      ${makeCheckboxCell(m.id, currentDate, 'physicalHabit', r.physicalHabit, canEdit)}
-      ${makeCheckboxCell(m.id, currentDate, 'screenTimeTarget', r.screenTimeTarget, canEdit)}
-      ${makeCheckboxCell(m.id, currentDate, 'nightReview', r.nightReview, canEdit)}
+      ${makeCheckboxCell(m.id, currentDate, 'nightReview', r.nightReview, canEdit, 'indigo')}
+      ${makeCheckboxCell(m.id, currentDate, 'sleptAt1030', r.sleptAt1030, canEdit, 'blue')}
+      ${makeCheckboxCell(m.id, currentDate, 'wokeUp5', r.wokeUp5, canEdit, 'orange')}
+      ${makeCheckboxCell(m.id, currentDate, 'timeBlocked', r.timeBlocked, canEdit, 'pink')}
+      ${makeCheckboxCell(m.id, currentDate, 'ateFrog', r.ateFrog, canEdit, 'green')}
+      ${makeCheckboxCell(m.id, currentDate, 'screenTimeTarget', r.screenTimeTarget, canEdit, 'purple')}
+      ${makeCheckboxCell(m.id, currentDate, 'physicalHabit', r.physicalHabit, canEdit, 'sky')}
       
       <td>
         ${makeRing(tot)}
@@ -1677,9 +1703,9 @@ async function toggleHabit(mid, date, field, newValue) {
   }
 }
 
-function makeCheckboxCell(mid, date, field, value, canEdit) {
+function makeCheckboxCell(mid, date, field, value, canEdit, colorType = 'green') {
   return `<td>
-    <div class="habit-checkbox ${value ? 'checked' : ''} ${!canEdit ? 'disabled' : ''}" 
+    <div class="habit-checkbox cb-${colorType} ${value ? 'checked' : ''} ${!canEdit ? 'disabled' : ''}" 
          ${canEdit ? `onclick="toggleHabit('${mid}', '${date}', '${field}', ${!value})"` : ''}>
       ✓
     </div>
@@ -1717,13 +1743,13 @@ function showMemberGraph(mid) {
     <div class="chart-card" style="padding:16px;background:rgba(255,255,255,0.015);border:1px solid var(--border);border-radius:12px">
       <div class="chart-title" style="margin-bottom:12px;font-weight:700">📈 Habit Tally (Last 7 Days)</div>
       <div style="display:flex;flex-direction:column;gap:8px;font-size:12.5px;color:var(--text)">
-        <div style="display:flex;justify-content:space-between"><span>🌙 Slept at 10:30 PM</span><b>${sleptCount}/7</b></div>
-        <div style="display:flex;justify-content:space-between"><span>☀️ Woke up at 5:00 AM</span><b>${wokeCount}/7</b></div>
+        <div style="display:flex;justify-content:space-between"><span>🌙 Night Review</span><b>${nightCount}/7</b></div>
+        <div style="display:flex;justify-content:space-between"><span>🛌 Slept at 10:30 PM</span><b>${sleptCount}/7</b></div>
+        <div style="display:flex;justify-content:space-between"><span>🌅 Woke up at 5:00 AM</span><b>${wokeCount}/7</b></div>
         <div style="display:flex;justify-content:space-between"><span>📋 Time-Blocked</span><b>${timeCount}/7</b></div>
         <div style="display:flex;justify-content:space-between"><span>🐸 Ate the Frog</span><b>${frogCount}/7</b></div>
+        <div style="display:flex;justify-content:space-between"><span>📈 Screen Time Target</span><b>${screenCount}/7</b></div>
         <div style="display:flex;justify-content:space-between"><span>📝 Physical Habit</span><b>${physCount}/7</b></div>
-        <div style="display:flex;justify-content:space-between"><span>📉 Screen Time Target</span><b>${screenCount}/7</b></div>
-        <div style="display:flex;justify-content:space-between"><span>🌙 Night Review</span><b>${nightCount}/7</b></div>
       </div>
     </div>`;
   
