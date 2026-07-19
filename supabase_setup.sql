@@ -276,6 +276,8 @@ begin
   new_user_id := gen_random_uuid();
 
   -- Insert into auth.users (email is automatically confirmed)
+  -- We must explicitly set token columns to empty strings ('') instead of NULL,
+  -- otherwise GoTrue / Supabase Auth will fail with a 500 "Database error querying schema"
   insert into auth.users (
     id,
     instance_id,
@@ -287,7 +289,11 @@ begin
     raw_app_meta_data,
     raw_user_meta_data,
     created_at,
-    updated_at
+    updated_at,
+    confirmation_token,
+    recovery_token,
+    email_change_token_new,
+    email_change
   ) values (
     new_user_id,
     '00000000-0000-0000-0000-000000000000',
@@ -299,7 +305,11 @@ begin
     '{"provider":"email","providers":["email"]}'::jsonb,
     json_build_object('username', input_username, 'phone', input_phone, 'role', 'student')::jsonb,
     now(),
-    now()
+    now(),
+    '',
+    '',
+    '',
+    ''
   );
 
   -- Insert identity to enable email/password login
@@ -326,3 +336,15 @@ begin
   return new_user_id;
 end;
 $$ language plpgsql security definer;
+
+-- 9. Fix any existing users created with NULL tokens to prevent "Database error querying schema" 500 error
+update auth.users
+set confirmation_token = coalesce(confirmation_token, ''),
+    recovery_token = coalesce(recovery_token, ''),
+    email_change_token_new = coalesce(email_change_token_new, ''),
+    email_change = coalesce(email_change, '')
+where confirmation_token is null
+   or recovery_token is null
+   or email_change_token_new is null
+   or email_change is null;
+
