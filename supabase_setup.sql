@@ -236,3 +236,93 @@ begin
   return target_role;
 end;
 $$ language plpgsql security definer;
+
+-- 8. Function for admins to create a new user with verified email and password
+create or replace function public.admin_create_user(
+  input_email text,
+  input_password text,
+  input_username text,
+  input_phone text default ''
+)
+returns uuid as $$
+declare
+  new_user_id uuid;
+begin
+  -- Check if the calling user is an admin
+  if not exists (
+    select 1 from public.profiles
+    where id = auth.uid() and role = 'admin'
+  ) then
+    raise exception 'Unauthorized: Only administrators can create new members.';
+  end if;
+
+  -- Validate inputs
+  if input_email is null or input_email = '' then
+    raise exception 'Email is required.';
+  end if;
+  if input_password is null or length(input_password) < 6 then
+    raise exception 'Password must be at least 6 characters.';
+  end if;
+  if input_username is null or input_username = '' then
+    raise exception 'Username is required.';
+  end if;
+
+  -- Check if user already exists in auth.users
+  if exists (select 1 from auth.users where email = input_email) then
+    raise exception 'A user with this email already exists.';
+  end if;
+
+  -- Generate new UUID
+  new_user_id := gen_random_uuid();
+
+  -- Insert into auth.users (email is automatically confirmed)
+  insert into auth.users (
+    id,
+    instance_id,
+    aud,
+    role,
+    email,
+    encrypted_password,
+    email_confirmed_at,
+    raw_app_meta_data,
+    raw_user_meta_data,
+    created_at,
+    updated_at
+  ) values (
+    new_user_id,
+    '00000000-0000-0000-0000-000000000000',
+    'authenticated',
+    'authenticated',
+    input_email,
+    crypt(input_password, gen_salt('bf')),
+    now(),
+    '{"provider":"email","providers":["email"]}'::jsonb,
+    json_build_object('username', input_username, 'phone', input_phone, 'role', 'student')::jsonb,
+    now(),
+    now()
+  );
+
+  -- Insert identity to enable email/password login
+  insert into auth.identities (
+    id,
+    user_id,
+    identity_data,
+    provider,
+    provider_id,
+    last_sign_in_at,
+    created_at,
+    updated_at
+  ) values (
+    new_user_id,
+    new_user_id,
+    format('{"sub": "%s", "email": "%s"}', new_user_id, input_email)::jsonb,
+    'email',
+    new_user_id,
+    now(),
+    now(),
+    now()
+  );
+
+  return new_user_id;
+end;
+$$ language plpgsql security definer;
